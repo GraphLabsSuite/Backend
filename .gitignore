@@ -1,0 +1,8 @@
+# IDE
+/.idea
+/.vs
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Oo]bj
