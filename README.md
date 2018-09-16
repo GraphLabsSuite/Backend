@@ -14,7 +14,7 @@
 
 ## Подготовка к первому запуску
 * Установите Visual Studio или Rider последней версии
-* Установите [.Net Core SDK 2.1] (https://www.microsoft.com/net/download/dotnet-core/2.1)
+* Установите [Net Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1)
 * Установите сертификат для отладки на localhost'е через https, выполнив:
 `dotnet dev-certs https --trust`
 
