@@ -1,6 +1,9 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphLabs.Backend", "GraphLabs.Backend\GraphLabs.Backend.csproj", "{CE0B4E57-9EAA-4853-8E3D-7C4E3656DD40}"
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphLabs.Backend.Api", "GraphLabs.Backend.Api\GraphLabs.Backend.Api.csproj", "{CE0B4E57-9EAA-4853-8E3D-7C4E3656DD40}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphLabs.Backend.Domain", "GraphLabs.Backend.Domain\GraphLabs.Backend.Domain.csproj", "{8206DE64-569F-44FE-BE9F-2E1CEB1207FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphLabs.Backend.DAL", "GraphLabs.Backend.DAL\GraphLabs.Backend.DAL.csproj", "{E4B16D54-4BB1-484E-8351-0649E56FAC6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +15,13 @@ Global
 		{CE0B4E57-9EAA-4853-8E3D-7C4E3656DD40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE0B4E57-9EAA-4853-8E3D-7C4E3656DD40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE0B4E57-9EAA-4853-8E3D-7C4E3656DD40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8206DE64-569F-44FE-BE9F-2E1CEB1207FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8206DE64-569F-44FE-BE9F-2E1CEB1207FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8206DE64-569F-44FE-BE9F-2E1CEB1207FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8206DE64-569F-44FE-BE9F-2E1CEB1207FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4B16D54-4BB1-484E-8351-0649E56FAC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4B16D54-4BB1-484E-8351-0649E56FAC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4B16D54-4BB1-484E-8351-0649E56FAC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4B16D54-4BB1-484E-8351-0649E56FAC6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
