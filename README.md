@@ -70,6 +70,7 @@
 
 **Добавление нового модуля-задания**
 > **POST** https://localhost:5001/odata/TaskModules
+
 _Content-Type: application/json_
 
 _Content:_
@@ -83,6 +84,7 @@ _Content:_
 ```
 
 **Запрос с фильтрацией**
+
 Запросим заголовок модуля с Id = 2:
 > **GET** https://localhost:5001/odata/TaskModules?$filter=Id eq 2
 ```json
@@ -100,6 +102,7 @@ _Content:_
 ```
 
 **Запрос с фильтрацией, лимитом и упорядочиванием**
+
 Обратите внимание, у нас нужно писать $ перед каждой частью запроса (бывает упрощённый синтаксис, но у нас он пока не поддержан).
 > **GET** https://localhost:5001/odata/TaskModules?$filter=version eq '2.0'&$top=3&$orderby=Name desc
 ```json
