@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GraphLabs.Backend.Api.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
     public class TaskModulesController : ODataController
     {
         private readonly GraphLabsContext _db;
