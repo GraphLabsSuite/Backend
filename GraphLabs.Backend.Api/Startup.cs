@@ -31,6 +31,7 @@ namespace GraphLabs.Backend.Api
             {
                 services.AddDbContext<GraphLabsContext>(options => options.UseInMemoryDatabase("GraphLabs"));
                 services.AddSingleton<InMemoryInitialData>();
+                services.AddCors();
             }
             else
             {
@@ -47,13 +48,18 @@ namespace GraphLabs.Backend.Api
             if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors(builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
             }
             else
             {
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
-            app.UseHttpsRedirection();
             app.UseMvc(builder =>
             {
                 builder.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
