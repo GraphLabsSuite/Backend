@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using GraphLabs.Backend.Api.Controllers;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
 using Microsoft.AspNet.OData.Builder;
@@ -6,6 +8,7 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +40,8 @@ namespace GraphLabs.Backend.Api
             {
                 throw new NotImplementedException("Для продакшна сделаем чуть позже");
             }
+
+            services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
             services.AddOData();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -70,7 +75,14 @@ namespace GraphLabs.Backend.Api
         private static IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
+            
             builder.EntitySet<TaskModule>("TaskModules");
+
+            var func = builder.EntityType<TaskModule>()
+                .Function(nameof(TaskModulesController.Download));
+            func.Parameter<string>("path");
+            func.Returns(typeof(IActionResult));
+            
             return builder.GetEdmModel();
         }
     }

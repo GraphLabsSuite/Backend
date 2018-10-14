@@ -31,7 +31,7 @@ namespace GraphLabs.Backend.DAL
             {
                 Id = 2,
                 Name = "КСС",
-                Description = "Дан граф. Найти все компоненты сильной связанности.",
+                Description = "Дан граф. Найти все компоненты сильной связности.",
                 Version = "2.0"
             };
             _taskModules.Add(taskModule);
