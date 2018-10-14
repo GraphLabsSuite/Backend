@@ -75,11 +75,12 @@ namespace GraphLabs.Backend.Api
         private static IEdmModel GetEdmModel()
         {
             var builder = new ODataConventionModelBuilder();
+            builder.Namespace = "GraphLabs";
             
             builder.EntitySet<TaskModule>("TaskModules");
 
             var func = builder.EntityType<TaskModule>()
-                .Function(nameof(TaskModulesController.Download));
+                .Function(nameof(TaskModulesDownloadController.Download));
             func.Parameter<string>("path");
             func.Returns(typeof(IActionResult));
             
