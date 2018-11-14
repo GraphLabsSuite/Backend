@@ -79,11 +79,15 @@ namespace GraphLabs.Backend.Api
             
             builder.EntitySet<TaskModule>("TaskModules");
 
-            var func = builder.EntityType<TaskModule>()
+            var downloadModuleFunc = builder.EntityType<TaskModule>()
                 .Function(nameof(TaskModulesDownloadController.Download));
-            func.Parameter<string>("path");
-            func.Returns(typeof(IActionResult));
-            
+            downloadModuleFunc.Parameter<string>("path");
+            downloadModuleFunc.Returns(typeof(IActionResult));
+
+            var downloadImageFunc = builder.Function(nameof(ImagesLibraryController.DownloadImage));
+            downloadImageFunc.Parameter<string>("name");
+            downloadImageFunc.Returns(typeof(IActionResult));
+
             return builder.GetEdmModel();
         }
     }

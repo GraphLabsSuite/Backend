@@ -26,4 +26,11 @@
       <ProjectReference Include="..\GraphLabs.Backend.Domain\GraphLabs.Backend.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\modules\1\images\Complete.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\modules\1\images\DontTouch.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\modules\1\images\Help.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\modules\1\images\Move.png" />
+    </ItemGroup>
+
 </Project>
