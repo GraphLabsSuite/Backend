@@ -12,10 +12,11 @@ namespace GraphLabs.Backend.DAL
         }
 
         public DbSet<TaskModule> TaskModules { get; set; }
+        public DbSet<TaskVariant> TaskVariants { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // todo: setup entity relations
+            modelBuilder.Entity<TaskVariant>().HasOne(v => v.TaskModule);
         }
     }
 }

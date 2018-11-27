@@ -78,6 +78,7 @@ namespace GraphLabs.Backend.Api
             builder.Namespace = "GraphLabs";
             
             builder.EntitySet<TaskModule>("TaskModules");
+            builder.EntitySet<TaskVariant>("TaskVariants");
 
             var downloadModuleFunc = builder.EntityType<TaskModule>()
                 .Function(nameof(TaskModulesDownloadController.Download));
@@ -87,6 +88,10 @@ namespace GraphLabs.Backend.Api
             var downloadImageFunc = builder.Function(nameof(ImagesLibraryController.DownloadImage));
             downloadImageFunc.Parameter<string>("name");
             downloadImageFunc.Returns(typeof(IActionResult));
+            
+            var getVariantFunc = builder.Function(nameof(TaskVariantsController.GetRandomVariant));
+            getVariantFunc.Parameter<long>("taskId");
+            getVariantFunc.Returns(typeof(string));
 
             return builder.GetEdmModel();
         }

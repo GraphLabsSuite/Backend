@@ -1,20 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using GraphLabs.Backend.Domain;
 
 namespace GraphLabs.Backend.DAL
 {
     public class InMemoryInitialData
     {
-        private IList<TaskModule> _taskModules { get; set; }
-
         public IList<TaskModule> GetTaskModules()
         {
-            if (_taskModules != null)
-            {
-                return _taskModules;
-            }
-
-            _taskModules = new List<TaskModule>();
+            var taskModules = new List<TaskModule>();
 
             // taskModule #1
             var taskModule = new TaskModule
@@ -24,7 +18,7 @@ namespace GraphLabs.Backend.DAL
                 Description = "Даны два графа. Доказать их изоморфность путём наложения вершин одного графа на вершины другого, или обосновать, почему это невозможно.",
                 Version = "2.0"
             };
-            _taskModules.Add(taskModule);
+            taskModules.Add(taskModule);
 
             // taskModule #2
             taskModule = new TaskModule
@@ -34,9 +28,36 @@ namespace GraphLabs.Backend.DAL
                 Description = "Дан граф. Найти все компоненты сильной связности.",
                 Version = "2.0"
             };
-            _taskModules.Add(taskModule);
+            taskModules.Add(taskModule);
 
-            return _taskModules;
+            return taskModules;
+        }
+
+        public IList<TaskVariant> GetTaskVariants(IEnumerable<TaskModule> modules)
+        {
+            var taskVariants = new List<TaskVariant>();
+            var idCounter = 0;
+            
+            foreach (var taskModule in modules)
+            {
+                for (var i = 0; i < 3; i++)
+                {
+                    idCounter++;
+                    taskVariants.Add(new TaskVariant
+                    {
+                        Id = idCounter,
+                        Name = $"Вариант {idCounter}",
+                        TaskModule = taskModule,
+                        VariantData = 
+@"[{ 
+    ""vertices"": [ ""1"", ""2"", ""3"", ""4"", ""5"" ], 
+    ""edges"": [ ""1-2"", ""2-3"", ""3-4"", ""4-5"", ""5-6"" ]
+}]"
+                    });
+                }
+            }
+
+            return taskVariants;
         }
     }
 }
