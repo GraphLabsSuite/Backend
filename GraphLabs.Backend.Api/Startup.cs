@@ -91,7 +91,7 @@ namespace GraphLabs.Backend.Api
             
             var getVariantFunc = builder.Function(nameof(TaskVariantsController.GetRandomVariant));
             getVariantFunc.Parameter<long>("taskId");
-            getVariantFunc.Returns(typeof(string));
+            getVariantFunc.Returns(typeof(IActionResult));
 
             return builder.GetEdmModel();
         }

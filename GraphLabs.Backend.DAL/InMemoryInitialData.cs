@@ -51,8 +51,9 @@ namespace GraphLabs.Backend.DAL
                         VariantData = 
 @"[{ 
     ""vertices"": [ ""1"", ""2"", ""3"", ""4"", ""5"" ], 
-    ""edges"": [ ""1-2"", ""2-3"", ""3-4"", ""4-5"", ""5-6"" ]
+    ""edges"": [ { ""source"": ""1"", ""target"": ""2"" }, { ""source"": ""2"", ""target"": ""3"" }, { ""source"": ""3"", ""target"": ""4"" }, { ""source"": ""4"", ""target"": ""5"" }, { ""source"": ""5"", ""target"": ""1"" } ] 
 }]"
+
                     });
                 }
             }
