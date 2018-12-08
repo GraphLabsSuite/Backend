@@ -1,11 +1,14 @@
 # Backend сайта GraphLabs
 
-## О текущей версии
-Первая наипростейшая версия, собранная по сэмплам одаты.
-
-Использует InMemory-базу данных, так что изменения между запусками сохраняться пока не будут.
-
-Содержит единственную сущность - заголовок модуля-задания `TaskModule`.
+## Реализованные и запланированные фичи
+- [x] Список модулей
+- [x] Список вариантов
+- [x] Выдача случайного варианта
+- [x] Выдача файлов модуля
+- [x] База общих изображений
+- [ ] Выдача псевдо-случайного варианта
+- [ ] Пользователи
+- [ ] Лог выполнения
 
 ## Технологии
 * Asp.Net Core
@@ -26,7 +29,7 @@
 > **GET** http://localhost:5000/odata/taskModules
 
 **Модуль с идентификатором 1:**
-> **GET** http://localhost:5000/odata/taskModules(___1___)
+> **GET** http://localhost:5000/odata/taskModules(1)
 
 **Запрос с фильтрацией (название = "КСС"):**
 > **GET** http://localhost:5000/odata/taskModules?$filter=Name eq 'КСС'
@@ -35,10 +38,10 @@
 > **GET** http://localhost:5000/odata/taskModules?$filter=version eq '2.0'&$top=3&$orderby=Name desc
 
 **Запрос случайного варианта задания с id = 2:**
-> **GET** http://localhost:5000/odata/taskModules(___2___)/randomVariant
+> **GET** http://localhost:5000/odata/taskModules(2)/randomVariant
 
 **Скачивание файла "service-worker.js" модуля-задания с id = 1:**
-> **GET** http://localhost:5000/odata/taskModules(___1___)/download(path='service-worker.js')
+> **GET** http://localhost:5000/odata/taskModules(1)/download(path='service-worker.js')
 
 **Скачивание файла "static/main.a091e228.js" модуля-задания с id = 1:**
 > **GET** http://localhost:5000/odata/taskModules(1)/download(path='static%2Fjs%2Fmain.a091e228.js')
@@ -50,4 +53,4 @@
 > **GET** http://localhost:5000/odata/taskVariants
 
 **Вариант с идентификатором 5:**
-> **GET** http://localhost:5000/odata/taskVariants(___5___)
+> **GET** http://localhost:5000/odata/taskVariants(5)
