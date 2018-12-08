@@ -16,7 +16,16 @@ namespace GraphLabs.Backend.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TaskVariant>().HasOne(v => v.TaskModule);
+            var taskVariant = modelBuilder.Entity<TaskVariant>();
+            taskVariant
+                .HasKey(v => v.Id);
+            taskVariant
+                .HasOne(v => v.TaskModule)
+                .WithMany(t => t.Variants)
+                .IsRequired();
+
+            var taskModule = modelBuilder.Entity<TaskModule>();
+            taskModule.HasKey(t => t.Id);
         }
     }
 }

@@ -4,7 +4,7 @@ using GraphLabs.Backend.Domain;
 
 namespace GraphLabs.Backend.DAL
 {
-    public class InMemoryInitialData
+    public class InitialData
     {
         public IList<TaskModule> GetTaskModules()
         {

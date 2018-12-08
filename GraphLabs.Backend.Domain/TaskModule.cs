@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GraphLabs.Backend.Domain
 {
     /// <summary> Модуль-задание </summary>
     public class TaskModule
     {
-        public long Id { get; set; }
+        public virtual long Id { get; set; }
         
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
         
-        public string Version { get; set; }
+        public virtual string Version { get; set; }
+        
+        public virtual ICollection<TaskVariant> Variants { get; set; }
     }
 }

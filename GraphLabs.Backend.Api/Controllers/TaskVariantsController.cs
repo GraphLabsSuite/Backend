@@ -14,26 +14,9 @@ namespace GraphLabs.Backend.Api.Controllers
     {
         private readonly GraphLabsContext _db;
 
-        public TaskVariantsController(GraphLabsContext context, InMemoryInitialData initialData)
+        public TaskVariantsController(GraphLabsContext context)
         {
             _db = context;
-
-            if (!context.TaskModules.Any())
-            {
-                foreach (var module in initialData.GetTaskModules())
-                {
-                    context.TaskModules.Add(module);
-                }
-                context.SaveChanges();
-            }
-            if (!context.TaskVariants.Any())
-            {
-                foreach (var variant in initialData.GetTaskVariants(context.TaskModules))
-                {
-                    context.TaskVariants.Add(variant);
-                }
-                context.SaveChanges();
-            }
         }
         
         [EnableQuery]

@@ -1,10 +1,11 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 using GraphLabs.Backend.Api.Controllers;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Routing.Conventions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,9 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData;
 using Microsoft.OData.Edm;
+using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace GraphLabs.Backend.Api
 {
@@ -27,13 +30,15 @@ namespace GraphLabs.Backend.Api
             _environment = environment;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var migrationsAssembly = GetType().Assembly.FullName;
+            services.AddDbContext<GraphLabsContext>(
+                o => o.UseSqlite("Data Source=GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
+
             if (_environment.IsDevelopment())
             {
-                services.AddDbContext<GraphLabsContext>(options => options.UseInMemoryDatabase("GraphLabs"));
-                services.AddSingleton<InMemoryInitialData>();
+                services.AddSingleton<InitialData>();
                 services.AddCors();
             }
             else
@@ -47,8 +52,7 @@ namespace GraphLabs.Backend.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app/*, IHostingEnvironment env*/)
+        public void Configure(IApplicationBuilder app)
         {
             if (_environment.IsDevelopment())
             {
@@ -68,15 +72,23 @@ namespace GraphLabs.Backend.Api
             app.UseMvc(builder =>
             {
                 builder.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
-                builder.MapODataServiceRoute("odata", "odata", GetEdmModel());
+
+                const string routeName = "odata";
+                builder.MapODataServiceRoute(routeName, routeName, routeBuilder => routeBuilder
+                    .AddService(ServiceLifetime.Singleton, sp => GetEdmModel())
+                    .AddService<IEnumerable<IODataRoutingConvention>>(ServiceLifetime.Singleton,
+                        sp => ODataRoutingConventions.CreateDefaultWithAttributeRouting(routeName, builder))
+                );
             });
         }
         
         private static IEdmModel GetEdmModel()
         {
-            var builder = new ODataConventionModelBuilder();
-            builder.Namespace = "GraphLabs";
-            
+            var builder = new ODataConventionModelBuilder
+            {
+                Namespace = "GraphLabs"
+            };
+
             builder.EntitySet<TaskModule>("TaskModules");
             builder.EntitySet<TaskVariant>("TaskVariants");
 
@@ -93,6 +105,8 @@ namespace GraphLabs.Backend.Api
             getVariantFunc.Parameter<long>("taskId");
             getVariantFunc.Returns(typeof(IActionResult));
 
+            builder.EnableLowerCamelCase();
+            
             return builder.GetEdmModel();
         }
     }

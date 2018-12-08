@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
@@ -12,18 +11,9 @@ namespace GraphLabs.Backend.Api.Controllers
     {
         private readonly GraphLabsContext _db;
         
-        public TaskModulesController(GraphLabsContext context, InMemoryInitialData initialData) 
+        public TaskModulesController(GraphLabsContext context) 
         {
             _db = context;
-            
-            if (!context.TaskModules.Any())
-            {
-                foreach (var module in initialData.GetTaskModules())
-                {
-                    context.TaskModules.Add(module);
-                }
-                context.SaveChanges();
-            }
         }
         
         [EnableQuery]
