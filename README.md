@@ -7,7 +7,8 @@
 - [x] Выдача файлов модуля
 - [x] База общих изображений
 - [ ] Выдача псевдо-случайного варианта
-- [ ] Пользователи
+- [x] Пользователи
+- [ ] Аутентификация и авторизация
 - [ ] Лог выполнения
 
 ## Технологии
@@ -54,3 +55,12 @@
 
 **Вариант с идентификатором 5:**
 > **GET** http://localhost:5000/odata/taskVariants(5)
+
+**Список всех студентов:**
+> **GET** http://localhost:5000/odata/students
+
+**Студент с идентификатором 2:**
+> **GET** http://localhost:5000/odata/students(2)
+
+**Студент с почтой "student-3@graphlabs.ru":**
+> **GET** http://localhost:5000/odata/students?$filter=email eq 'student-3@graphlabs.ru'

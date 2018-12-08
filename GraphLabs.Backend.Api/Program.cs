@@ -49,6 +49,14 @@ namespace GraphLabs.Backend.Api
                 }
                 await context.SaveChangesAsync();
             }
+            if (!context.Users.Any())
+            {
+                foreach (var user in initialData.GetUsers())
+                {
+                    context.Users.Add(user);
+                }
+                await context.SaveChangesAsync();
+            }
         }
     }    
 }

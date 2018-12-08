@@ -6,36 +6,29 @@ namespace GraphLabs.Backend.DAL
 {
     public class InitialData
     {
-        public IList<TaskModule> GetTaskModules()
+        public IEnumerable<TaskModule> GetTaskModules()
         {
-            var taskModules = new List<TaskModule>();
-
             // taskModule #1
-            var taskModule = new TaskModule
+            yield return new TaskModule
             {
                 Id = 1,
                 Name = "Изоморфизм",
                 Description = "Даны два графа. Доказать их изоморфность путём наложения вершин одного графа на вершины другого, или обосновать, почему это невозможно.",
                 Version = "2.0"
             };
-            taskModules.Add(taskModule);
 
             // taskModule #2
-            taskModule = new TaskModule
+            yield return  new TaskModule
             {
                 Id = 2,
                 Name = "КСС",
                 Description = "Дан граф. Найти все компоненты сильной связности.",
                 Version = "2.0"
             };
-            taskModules.Add(taskModule);
-
-            return taskModules;
         }
 
-        public IList<TaskVariant> GetTaskVariants(IEnumerable<TaskModule> modules)
+        public IEnumerable<TaskVariant> GetTaskVariants(IEnumerable<TaskModule> modules)
         {
-            var taskVariants = new List<TaskVariant>();
             var idCounter = 0;
             
             foreach (var taskModule in modules)
@@ -43,7 +36,7 @@ namespace GraphLabs.Backend.DAL
                 for (var i = 0; i < 3; i++)
                 {
                     idCounter++;
-                    taskVariants.Add(new TaskVariant
+                    yield return new TaskVariant
                     {
                         Id = idCounter,
                         Name = $"Вариант {idCounter}",
@@ -54,11 +47,52 @@ namespace GraphLabs.Backend.DAL
     ""edges"": [ { ""source"": ""1"", ""target"": ""2"" }, { ""source"": ""2"", ""target"": ""3"" }, { ""source"": ""3"", ""target"": ""4"" }, { ""source"": ""4"", ""target"": ""5"" }, { ""source"": ""5"", ""target"": ""1"" } ] 
 }]"
 
-                    });
+                    };
                 }
             }
+        }
 
-            return taskVariants;
+        public IEnumerable<User> GetUsers()
+        {
+            var idCounter = 0;
+            yield return new Teacher
+            {
+                Id = ++idCounter,
+                Email = "admin@graphlabs.ru",
+                Name = "Администратор"
+            };
+            
+            yield return new Student
+            {
+                Id = ++idCounter,
+                Email = "student-1@graphlabs.ru",
+                Name = "Студент Первый Тестовый",
+                Group = "Первая Тестовая"
+            };
+            
+            yield return new Student
+            {
+                Id = ++idCounter,
+                Email = "student-2@graphlabs.ru",
+                Name = "Студент Второй Тестовый",
+                Group = "Первая Тестовая"
+            };
+            
+            yield return new Student
+            {
+                Id = ++idCounter,
+                Email = "student-3@graphlabs.ru",
+                Name = "Студент Третий Тестовый",
+                Group = "Вторая Тестовая"
+            };
+            
+            yield return new Student
+            {
+                Id = ++idCounter,
+                Email = "student-4@graphlabs.ru",
+                Name = "Студент Четвёртый Тестовый",
+                Group = "Вторая Тестовая"
+            };
         }
     }
 }

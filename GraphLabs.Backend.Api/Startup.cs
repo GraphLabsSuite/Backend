@@ -89,22 +89,34 @@ namespace GraphLabs.Backend.Api
                 Namespace = "GraphLabs"
             };
 
+            // TaskModules =============================================================================================
             var taskModule = builder.EntitySet<TaskModule>("TaskModules").EntityType;
             taskModule.HasKey(m => m.Id);
             taskModule.HasMany(m => m.Variants);
             
-            taskModule
-                .Function(nameof(TaskModulesController.RandomVariant))
-                .Returns<IActionResult>();
+            taskModule.Function(nameof(TaskModulesController.RandomVariant)).Returns<IActionResult>();
             
             var downloadFunc = taskModule.Function(nameof(TaskModulesController.Download));
             downloadFunc.Parameter<string>("path").Required();
             downloadFunc.Returns<IActionResult>();
 
+            // TaskVariants ============================================================================================
             var taskVariant = builder.EntitySet<TaskVariant>("TaskVariants").EntityType;
             taskVariant.HasKey(v => v.Id);
             taskVariant.HasRequired(v => v.TaskModule);
 
+            // Users ===================================================================================================
+            var user = builder.EntityType<User>();
+            user.HasKey(u => u.Id);
+            user.Abstract();
+
+            var teacher = builder.EntitySet<Teacher>("Teachers").EntityType;
+            teacher.DerivesFrom<User>();
+
+            var student = builder.EntitySet<Student>("Students").EntityType;
+            student.DerivesFrom<User>();
+            
+            // Unbound operations ======================================================================================
             var downloadImageFunc = builder.Function(nameof(ImagesLibraryController.DownloadImage));
             downloadImageFunc.Parameter<string>("name");
             downloadImageFunc.Returns(typeof(IActionResult));
