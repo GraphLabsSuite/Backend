@@ -14,113 +14,40 @@
 
 ## Подготовка к первому запуску
 * Установите Visual Studio или Rider последней версии
-* Установите [Net Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1)
+* Установите [Net Core SDK 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2)
 * Установите сертификат для отладки на localhost'е через https, выполнив:
 `dotnet dev-certs https --trust`
 
 ## Примеры использования
-**Метаданные**
-> https://localhost:5001/odata/$metadata
+**Метаданные:**
+> **GET** http://localhost:5000/odata/$metadata
 
-```xml
-<edmx:Edmx Version="4.0">
-    <edmx:DataServices>
-        <Schema Namespace="GraphLabs.Backend.Domain">
-            <EntityType Name="TaskModule">
-                <Key>
-                    <PropertyRef Name="Id"/>
-                </Key>
-                <Property Name="Id" Type="Edm.Int64" Nullable="false"/>
-                <Property Name="Name" Type="Edm.String"/>
-                <Property Name="Description" Type="Edm.String"/>
-                <Property Name="Version" Type="Edm.String"/>
-            </EntityType>
-        </Schema>
-        <Schema Namespace="Default">
-            <EntityContainer Name="Container">
-                <EntitySet Name="TaskModules" EntityType="GraphLabs.Backend.Domain.TaskModule"/>
-            </EntityContainer>
-        </Schema>x
-    </edmx:DataServices>
-</edmx:Edmx>
-```
+**Список всех модулей-заданий:**
+> **GET** http://localhost:5000/odata/taskModules
 
-**Список всех модулей-заданий**
-> **GET** https://localhost:5001/odata/TaskModules
+**Модуль с идентификатором 1:**
+> **GET** http://localhost:5000/odata/taskModules(___1___)
 
-```json
-{
-  "@odata.context": "https://localhost:5001/odata/$metadata#TaskModules",
-  "value": [
-    {
-      "Id": 1,
-      "Name": "Изоморфизм",
-      "Description": "Даны два графа. Доказать их изоморфность путём наложения вершин одного графа на вершины другого, или обосновать, почему это невозможно.",
-      "Version": "2.0"
-    },
-    {
-      "Id": 2,
-      "Name": "КСС",
-      "Description": "Дан граф. Найти все компоненты сильной связанности.",
-      "Version": "2.0"
-    }
-  ]
-}
-```
+**Запрос с фильтрацией (название = "КСС"):**
+> **GET** http://localhost:5000/odata/taskModules?$filter=Name eq 'КСС'
 
-**Добавление нового модуля-задания**
-> **POST** https://localhost:5001/odata/TaskModules
+**Запрос с фильтрацией, лимитом и упорядочиванием:**
+> **GET** http://localhost:5000/odata/taskModules?$filter=version eq '2.0'&$top=3&$orderby=Name desc
 
-_Content-Type: application/json_
+**Запрос случайного варианта задания с id = 2:**
+> **GET** http://localhost:5000/odata/taskModules(___2___)/randomVariant
 
-_Content:_
-```json
-{
-  "Id": 3,
-  "Name": "Подграфы",
-  "Description": "Длинное-предлинное описание создаваемого модуля-задания.",
-  "Version": "2.1"
-}
-```
+**Скачивание файла "service-worker.js" модуля-задания с id = 1:**
+> **GET** http://localhost:5000/odata/taskModules(___1___)/download(path='service-worker.js')
 
-**Запрос с фильтрацией**
+**Скачивание файла "static/main.a091e228.js" модуля-задания с id = 1:**
+> **GET** http://localhost:5000/odata/taskModules(1)/download(path='static%2Fjs%2Fmain.a091e228.js')
 
-Запросим заголовок модуля с Id = 2:
-> **GET** https://localhost:5001/odata/TaskModules?$filter=Id eq 2
-```json
-{
-  "@odata.context": "https://localhost:5001/odata/$metadata#TaskModules",
-  "value": [
-    {
-      "Id": 2,
-      "Name": "КСС",
-      "Description": "Дан граф. Найти все компоненты сильной связанности.",
-      "Version": "2.0"
-    }
-  ]
-}
-```
+**Скачивание изображения "Complete.png" из общей библиотеки:**
+> **GET** http://localhost:5000/odata/downloadImage(name='Complete.png')
 
-**Запрос с фильтрацией, лимитом и упорядочиванием**
+**Список всех вариантов:**
+> **GET** http://localhost:5000/odata/taskVariants
 
-Обратите внимание, у нас нужно писать $ перед каждой частью запроса (бывает упрощённый синтаксис, но у нас он пока не поддержан).
-> **GET** https://localhost:5001/odata/TaskModules?$filter=version eq '2.0'&$top=3&$orderby=Name desc
-```json
-{
-  "@odata.context": "https://localhost:5001/odata/$metadata#TaskModules",
-  "value": [
-    {
-      "Id": 2,
-      "Name": "КСС",
-      "Description": "Дан граф. Найти все компоненты сильной связанности.",
-      "Version": "2.0"
-    },
-    {
-      "Id": 1,
-      "Name": "Изоморфизм",
-      "Description": "Даны два графа. Доказать их изоморфность путём наложения вершин одного графа на вершины другого, или обосновать, почему это невозможно.",
-      "Version": "2.0"
-    }
-  ]
-}
-```
+**Вариант с идентификатором 5:**
+> **GET** http://localhost:5000/odata/taskVariants(___5___)

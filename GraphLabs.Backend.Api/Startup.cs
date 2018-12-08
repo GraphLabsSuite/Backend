@@ -89,21 +89,26 @@ namespace GraphLabs.Backend.Api
                 Namespace = "GraphLabs"
             };
 
-            builder.EntitySet<TaskModule>("TaskModules");
-            builder.EntitySet<TaskVariant>("TaskVariants");
+            var taskModule = builder.EntitySet<TaskModule>("TaskModules").EntityType;
+            taskModule.HasKey(m => m.Id);
+            taskModule.HasMany(m => m.Variants);
+            
+            taskModule
+                .Function(nameof(TaskModulesController.RandomVariant))
+                .Returns<IActionResult>();
+            
+            var downloadFunc = taskModule.Function(nameof(TaskModulesController.Download));
+            downloadFunc.Parameter<string>("path").Required();
+            downloadFunc.Returns<IActionResult>();
 
-            var downloadModuleFunc = builder.EntityType<TaskModule>()
-                .Function(nameof(TaskModulesDownloadController.Download));
-            downloadModuleFunc.Parameter<string>("path");
-            downloadModuleFunc.Returns(typeof(IActionResult));
+            var taskVariant = builder.EntitySet<TaskVariant>("TaskVariants").EntityType;
+            taskVariant.HasKey(v => v.Id);
+            taskVariant.HasRequired(v => v.TaskModule);
 
             var downloadImageFunc = builder.Function(nameof(ImagesLibraryController.DownloadImage));
             downloadImageFunc.Parameter<string>("name");
             downloadImageFunc.Returns(typeof(IActionResult));
-            
-            var getVariantFunc = builder.Function(nameof(TaskVariantsController.GetRandomVariant));
-            getVariantFunc.Parameter<long>("taskId");
-            getVariantFunc.Returns(typeof(IActionResult));
+
 
             builder.EnableLowerCamelCase();
             
