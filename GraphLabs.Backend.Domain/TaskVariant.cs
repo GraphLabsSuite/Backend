@@ -12,5 +12,7 @@ namespace GraphLabs.Backend.Domain
         public virtual string VariantData { get; set; }
         
         public virtual TaskModule TaskModule { get; set; }
+        
+        public virtual ICollection<TaskVariantLog> Logs { get; set; }
     }
 }

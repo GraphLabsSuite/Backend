@@ -18,9 +18,9 @@ namespace GraphLabs.Backend.Api.Controllers
         }
         
         [EnableQuery]
-        public IActionResult Get()
+        public IQueryable<Student> Get()
         {
-            return Ok(_db.Students);
+            return _db.Students;
         }
         
         [ODataRoute("({key})")]

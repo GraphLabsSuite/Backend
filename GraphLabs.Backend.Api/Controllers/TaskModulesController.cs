@@ -32,9 +32,9 @@ namespace GraphLabs.Backend.Api.Controllers
         }
 
         [EnableQuery]
-        public IActionResult Get()
+        public IQueryable<TaskModule> Get()
         {
-            return Ok(_db.TaskModules);
+            return _db.TaskModules;
         }
 
         [ODataRoute("({key})")]

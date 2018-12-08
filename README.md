@@ -9,7 +9,7 @@
 - [ ] Выдача псевдо-случайного варианта
 - [x] Пользователи
 - [ ] Аутентификация и авторизация
-- [ ] Лог выполнения
+- [x] Лог выполнения
 
 ## Технологии
 * Asp.Net Core
@@ -64,3 +64,20 @@
 
 **Студент с почтой "student-3@graphlabs.ru":**
 > **GET** http://localhost:5000/odata/students?$filter=email eq 'student-3@graphlabs.ru'
+
+**Список всех действий:**
+> **GET** http://localhost:5000/odata/taskVariantLogs
+
+**Зарегистрировать новое действие:**
+> **POST** http://localhost:5000/odata/taskVariantLogs
+
+_Content-Type:_ application/json
+
+_Body:_
+```json 
+{
+    "Action": "Тестовое действие",
+    "VariantId": 1,
+    "StudentId": 2
+}
+```

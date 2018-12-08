@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
 using Microsoft.AspNet.OData;
@@ -19,9 +18,9 @@ namespace GraphLabs.Backend.Api.Controllers
         }
         
         [EnableQuery]
-        public IActionResult Get()
+        public IQueryable<TaskVariant> Get()
         {
-            return Ok(_db.TaskVariants);
+            return _db.TaskVariants;
         }
         
         [ODataRoute("({key})")]

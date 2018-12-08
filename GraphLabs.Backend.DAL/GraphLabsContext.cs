@@ -16,6 +16,7 @@ namespace GraphLabs.Backend.DAL
         public DbSet<User> Users { get; protected set; }
         public DbSet<Student> Students { get; protected set; }
         public DbSet<Teacher> Teachers { get; protected set; }
+        public DbSet<TaskVariantLog> TaskVariantLogs { get; protected set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +41,22 @@ namespace GraphLabs.Backend.DAL
             student.HasIndex(s => s.Group);
             
             modelBuilder.Entity<Teacher>();
+
+            var log = modelBuilder.Entity<TaskVariantLog>();
+            log.HasKey(l => l.Id);
+            log.Property(l => l.Action)
+                .IsRequired();
+            log.HasOne(l => l.Variant)
+                .WithMany(v => v.Logs)
+                .IsRequired()
+                .HasForeignKey(l => l.VariantId)
+                .OnDelete(DeleteBehavior.Restrict);
+            log.HasOne(l => l.Student)
+                .WithMany(s => s.Logs)
+                .IsRequired()
+                .HasForeignKey(l => l.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            log.HasIndex(l => l.DateTime);
         }
     }
 }

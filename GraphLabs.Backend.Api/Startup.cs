@@ -104,7 +104,7 @@ namespace GraphLabs.Backend.Api
             var taskVariant = builder.EntitySet<TaskVariant>("TaskVariants").EntityType;
             taskVariant.HasKey(v => v.Id);
             taskVariant.HasRequired(v => v.TaskModule);
-
+            
             // Users ===================================================================================================
             var user = builder.EntityType<User>();
             user.HasKey(u => u.Id);
@@ -115,12 +115,18 @@ namespace GraphLabs.Backend.Api
 
             var student = builder.EntitySet<Student>("Students").EntityType;
             student.DerivesFrom<User>();
+            student.HasMany(s => s.Logs);
+            
+            // TaskVariantLogs =========================================================================================
+            var taskVariantLog = builder.EntitySet<TaskVariantLog>("TaskVariantLogs").EntityType;
+            taskVariantLog.HasKey(l => l.Id);
+            taskVariantLog.HasRequired(l => l.Student);
+            taskVariantLog.HasRequired(l => l.Variant);
             
             // Unbound operations ======================================================================================
             var downloadImageFunc = builder.Function(nameof(ImagesLibraryController.DownloadImage));
             downloadImageFunc.Parameter<string>("name");
             downloadImageFunc.Returns(typeof(IActionResult));
-
 
             builder.EnableLowerCamelCase();
             
