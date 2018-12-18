@@ -17,7 +17,7 @@ namespace GraphLabs.Backend.Api
             using (var scope = webHost.Services.CreateScope())
             using (var context = scope.ServiceProvider.GetRequiredService<GraphLabsContext>())
             {
-                await InitializeDb(context, new InitialData());
+                await InitializeDb(context, new InitialData(new PasswordHashCalculator()));
             }
             
             await webHost.RunAsync();

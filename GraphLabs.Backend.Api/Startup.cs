@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using GraphLabs.Backend.Api.Auth;
 using GraphLabs.Backend.Api.Controllers;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Routing.Conventions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
 using ServiceLifetime = Microsoft.OData.ServiceLifetime;
@@ -45,11 +52,42 @@ namespace GraphLabs.Backend.Api
             {
                 throw new NotImplementedException("Для продакшна сделаем чуть позже");
             }
-
+            
             services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            
             services.AddOData();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(config =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
+
+            // configure strongly typed settings objects
+            var authSettings = _configuration.GetSection("AuthSettings");
+            services.Configure<AuthSettings>(authSettings);
+            
+            var appSettings = authSettings.Get<AuthSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x =>
+                {
+                    if (_environment.IsDevelopment())
+                        x.RequireHttpsMetadata = false;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                    };
+                });
+
+            services.AddScoped<UserService>();
+            services.AddSingleton<PasswordHashCalculator>();
         }
 
         public void Configure(IApplicationBuilder app)
@@ -69,6 +107,8 @@ namespace GraphLabs.Backend.Api
                 app.UseHttpsRedirection();
             }
 
+            app.UseAuthentication();
+            
             app.UseMvc(builder =>
             {
                 builder.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
@@ -109,6 +149,8 @@ namespace GraphLabs.Backend.Api
             var user = builder.EntityType<User>();
             user.HasKey(u => u.Id);
             user.Abstract();
+            user.Ignore(u => u.PasswordHash);
+            user.Ignore(u => u.PasswordSalt);
 
             var teacher = builder.EntitySet<Teacher>("Teachers").EntityType;
             teacher.DerivesFrom<User>();

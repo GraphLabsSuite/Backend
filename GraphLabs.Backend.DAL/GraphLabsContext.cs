@@ -1,5 +1,4 @@
-﻿using System;
-using GraphLabs.Backend.Domain;
+﻿using GraphLabs.Backend.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraphLabs.Backend.DAL
@@ -36,6 +35,10 @@ namespace GraphLabs.Backend.DAL
             user.HasKey(u => u.Id);
             user.Property(u => u.Email).IsRequired();
             user.HasIndex(u => u.Email).IsUnique();
+            user.Property(u => u.FirstName).IsRequired();
+            user.Property(u => u.LastName).IsRequired();
+            user.Property(u => u.PasswordHash).IsRequired();
+            user.Property(u => u.PasswordSalt).IsRequired();
             
             var student = modelBuilder.Entity<Student>();
             student.HasIndex(s => s.Group);
