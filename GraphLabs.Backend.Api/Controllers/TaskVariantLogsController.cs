@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
@@ -15,10 +16,13 @@ namespace GraphLabs.Backend.Api.Controllers
     public class TaskVariantLogsController : ODataController
     {
         private readonly GraphLabsContext _db;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public TaskVariantLogsController(GraphLabsContext context)
+        public TaskVariantLogsController(GraphLabsContext context,
+            IHttpContextAccessor contextAccessor)
         {
             _db = context;
+            _contextAccessor = contextAccessor;
         }
         
         [EnableQuery]
@@ -35,22 +39,29 @@ namespace GraphLabs.Backend.Api.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]CreateLogDto dto)
+        public async Task<IActionResult> Post([FromBody]CreateLogRequest request)
         {
-            if (dto == null ||
-                dto.StudentId == 0 ||
-                dto.VariantId == 0 ||
-                string.IsNullOrEmpty(dto.Action))
+            if (request == null ||
+                request.VariantId == 0 ||
+                string.IsNullOrEmpty(request.Action))
             {
                 return PreconditionFailed();
             }
+
+            var email = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return BadRequest();
+
+            var student = await _db.Students.SingleOrDefaultAsync(s => s.Email == email);
+            if (student == null)
+                return BadRequest();
             
             var logEntry = new TaskVariantLog
             {
-                Action = dto.Action,
+                Action = request.Action,
                 DateTime = DateTime.Now,
-                StudentId = dto.StudentId,
-                VariantId = dto.VariantId
+                StudentId = student.Id,
+                VariantId = request.VariantId
             };
 
             await _db.TaskVariantLogs.AddAsync(logEntry);
@@ -59,13 +70,11 @@ namespace GraphLabs.Backend.Api.Controllers
             return Created(logEntry);
         }
 
-        public class CreateLogDto
+        public class CreateLogRequest
         {
             public string Action { get; set; }
         
             public long VariantId { get; set; }
-
-            public long StudentId { get; set; }
         }
 
         

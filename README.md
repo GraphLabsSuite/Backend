@@ -34,8 +34,8 @@ _Content-Type:_ application/json
 _Body:_
 ```json 
 {
-    "email": "admin@graphlabs.ru",
-    "password": "admin"
+    "email": "student-1@graphlabs.ru",
+    "password": "первый"
 }
 ```
 
@@ -109,7 +109,6 @@ _Body:_
 ```json 
 {
     "Action": "Тестовое действие",
-    "VariantId": 1,
-    "StudentId": 2
+    "VariantId": 1
 }
 ```
