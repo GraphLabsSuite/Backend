@@ -23,7 +23,7 @@ namespace GraphLabs.Backend.Api.Controllers
             var response = await _userService.Authenticate(request);
 
             if (response == null)
-                return BadRequest(new { message = "Email or password is incorrect" });
+                return Unauthorized(new { message = "Email or password is incorrect" });
 
             return Ok(response);
         }

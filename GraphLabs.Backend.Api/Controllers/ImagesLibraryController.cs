@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Routing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -21,6 +22,7 @@ namespace GraphLabs.Backend.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ODataRoute("DownloadImage(name={name})")]
         public IActionResult DownloadImage(string name)
         {

@@ -28,6 +28,9 @@ namespace GraphLabs.Backend.Api.Auth
         public async Task<LoginResponse> Authenticate(LoginRequest login)
         {
             var user = await _ctx.Users.SingleOrDefaultAsync(x => x.Email == login.Email);
+            if (user == null)
+                return null;
+            
             var hash = _hashCalculator.Calculate(login.Password, user.PasswordSalt);
             if (!hash.SequenceEqual(user.PasswordHash))
                 return null;
