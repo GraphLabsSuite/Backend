@@ -41,7 +41,7 @@ namespace GraphLabs.Backend.Api
         {
             var migrationsAssembly = GetType().Assembly.FullName;
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseSqlite("Data Source=GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
+                o => o.UseSqlite("Data Source=/db/GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
 
             if (_environment.IsDevelopment())
             {

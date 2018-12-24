@@ -89,7 +89,7 @@ namespace GraphLabs.Backend.DAL
                 Id = ++idCounter,
                 Email = "student-1@graphlabs.ru",
                 FirstName = "Студент Первый Тестовый",
-                LastName = "Администратор",
+                LastName = "Первый",
                 FatherName = "Тестовый",
                 Group = "Первая Тестовая",
                 PasswordSalt = salts[idCounter],
