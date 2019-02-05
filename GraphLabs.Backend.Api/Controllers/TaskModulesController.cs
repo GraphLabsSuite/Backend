@@ -73,6 +73,7 @@ namespace GraphLabs.Backend.Api.Controllers
         public IActionResult Download(int key, [FromODataUri]string path)
         {
             path = path
+                .TrimStart('/')
                 .Replace('/', Path.DirectorySeparatorChar)
                 .Replace('\\', Path.DirectorySeparatorChar);
             
