@@ -3,14 +3,16 @@ using System;
 using GraphLabs.Backend.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GraphLabs.Backend.Api.Migrations
 {
     [DbContext(typeof(GraphLabsContext))]
-    partial class GraphLabsContextModelSnapshot : ModelSnapshot
+    [Migration("20190205043438_NewModuleNo2")]
+    partial class NewModuleNo2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
