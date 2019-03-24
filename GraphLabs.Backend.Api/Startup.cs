@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using GraphLabs.Backend.Api.Auth;
 using GraphLabs.Backend.Api.Controllers;
@@ -17,11 +18,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData;
 using Microsoft.OData.Edm;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace GraphLabs.Backend.Api
@@ -41,7 +46,7 @@ namespace GraphLabs.Backend.Api
         {
             var migrationsAssembly = GetType().Assembly.FullName;
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseSqlite("Data Source=/db/GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
+                o => o.UseSqlite("Data Source=db/GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
 
             if (_environment.IsDevelopment())
             {
@@ -88,6 +93,21 @@ namespace GraphLabs.Backend.Api
 
             services.AddScoped<UserService>();
             services.AddSingleton<PasswordHashCalculator>();
+
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
+            {
+                Converters =
+                {
+                    new StringEnumConverter
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy()
+                    }
+                },
+                Formatting = Formatting.Indented,
+                Culture = CultureInfo.InvariantCulture,
+                TypeNameHandling = TypeNameHandling.None,
+                ContractResolver = new LowerCamelCaseContractResolver()
+            };
         }
 
         public void Configure(IApplicationBuilder app)

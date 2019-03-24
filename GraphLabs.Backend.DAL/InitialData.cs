@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Security.Cryptography;
 using GraphLabs.Backend.Domain;
+using GraphLabs.Backend.Domain.VariantData;
+using Newtonsoft.Json;
 
 namespace GraphLabs.Backend.DAL
 {
@@ -29,15 +31,32 @@ namespace GraphLabs.Backend.DAL
             yield return  new TaskModule
             {
                 Id = 2,
-                Name = "КСС",
-                Description = "Дан граф. Найти все компоненты сильной связности.",
-                Version = "2.0"
+                Name = "Модуль Лизы",
+                Description = "Описание",
+                Version = "1.0"
             };
         }
 
         public IEnumerable<TaskVariant> GetTaskVariants(IEnumerable<TaskModule> modules)
         {
             var idCounter = 0;
+
+            var sampleData = new VariantData<Graph>
+            {
+                Type = VariantDataType.Graph,
+                Value = new Graph
+                {
+                    Vertices = new[] {"1", "2", "3", "4", "5"},
+                    Edges = new[]
+                    {
+                        new Edge {Source = "1", Target = "2"},
+                        new Edge {Source = "2", Target = "3"},
+                        new Edge {Source = "3", Target = "4"},
+                        new Edge {Source = "4", Target = "5"},
+                        new Edge {Source = "5", Target = "1"}
+                    }
+                }
+            };
             
             foreach (var taskModule in modules)
             {
@@ -49,12 +68,7 @@ namespace GraphLabs.Backend.DAL
                         Id = idCounter,
                         Name = $"Вариант {idCounter}",
                         TaskModule = taskModule,
-                        VariantData = 
-@"[{ 
-    ""vertices"": [ ""1"", ""2"", ""3"", ""4"", ""5"" ], 
-    ""edges"": [ { ""source"": ""1"", ""target"": ""2"" }, { ""source"": ""2"", ""target"": ""3"" }, { ""source"": ""3"", ""target"": ""4"" }, { ""source"": ""4"", ""target"": ""5"" }, { ""source"": ""5"", ""target"": ""1"" } ] 
-}]"
-
+                        VariantData = JsonConvert.SerializeObject(new [] { sampleData })
                     };
                 }
             }
