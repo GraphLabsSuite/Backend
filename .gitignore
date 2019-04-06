@@ -9,3 +9,4 @@
 [Oo]bj
 /GraphLabs.Backend.Api/publish
 /GraphLabs.Backend.Api/GraphLabs.sqlite
+/GraphLabs.Backend.Api/db

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphLabs.Backend.DAL;
@@ -69,6 +70,9 @@ namespace GraphLabs.Backend.Api.Controllers
 
             return result;
         }
+
+        private string GetModulePath(int key)
+            => Path.Combine("modules", key.ToString(CultureInfo.InvariantCulture));
         
         public IActionResult Download(int key, [FromODataUri]string path)
         {
@@ -78,8 +82,7 @@ namespace GraphLabs.Backend.Api.Controllers
                 .Replace('\\', Path.DirectorySeparatorChar);
             
             var targetPath = Path.Combine(
-                "modules",
-                key.ToString(CultureInfo.InvariantCulture),
+                GetModulePath(key),
                 path);
             
             var file = _hostingEnvironment.WebRootFileProvider.GetFileInfo(targetPath);
@@ -94,6 +97,24 @@ namespace GraphLabs.Backend.Api.Controllers
             {
                 return NotFound();
             }
+        }
+        
+        public IActionResult Upload(int key)
+        {
+            var targetPath = Path.Combine(
+                _hostingEnvironment.WebRootPath,
+                GetModulePath(key));
+            
+            if (Directory.Exists(targetPath))
+                Directory.Delete(targetPath, true);
+
+            using (var stream = Request.Body)
+            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+            {
+                archive.ExtractToDirectory(targetPath);
+            }
+
+            return Ok();
         }
     }
 }

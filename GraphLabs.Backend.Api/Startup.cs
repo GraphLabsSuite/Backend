@@ -46,7 +46,7 @@ namespace GraphLabs.Backend.Api
         {
             var migrationsAssembly = GetType().Assembly.FullName;
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseSqlite("Data Source=db/GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
+                o => o.UseSqlite("Data Source=/db/GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
 
             if (_environment.IsDevelopment())
             {
@@ -159,6 +159,9 @@ namespace GraphLabs.Backend.Api
             var downloadFunc = taskModule.Function(nameof(TaskModulesController.Download));
             downloadFunc.Parameter<string>("path").Required();
             downloadFunc.Returns<IActionResult>();
+            
+            var uploadFunc = taskModule.Action(nameof(TaskModulesController.Upload));
+            uploadFunc.Returns<IActionResult>();
 
             // TaskVariants ============================================================================================
             var taskVariant = builder.EntitySet<TaskVariant>("TaskVariants").EntityType;
