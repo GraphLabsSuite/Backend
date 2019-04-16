@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Security.Claims;
 using System.Text;
 using GraphLabs.Backend.Api.Auth;
 using GraphLabs.Backend.Api.Controllers;
@@ -45,8 +46,10 @@ namespace GraphLabs.Backend.Api
         public void ConfigureServices(IServiceCollection services)
         {
             var migrationsAssembly = GetType().Assembly.FullName;
+
+            var dbPath = Environment.GetEnvironmentVariable("DB_FILE_PATH");
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseSqlite("Data Source=/db/GraphLabs.sqlite", b => b.MigrationsAssembly(migrationsAssembly)));
+                o => o.UseSqlite($"Data Source={dbPath}", b => b.MigrationsAssembly(migrationsAssembly)));
 
             if (_environment.IsDevelopment())
             {
@@ -87,7 +90,8 @@ namespace GraphLabs.Backend.Api
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        RoleClaimType = ClaimTypes.Role
                     };
                 });
 

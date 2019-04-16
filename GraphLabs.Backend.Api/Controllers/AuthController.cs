@@ -27,5 +27,16 @@ namespace GraphLabs.Backend.Api.Controllers
 
             return Ok(response);
         }
+        
+        [HttpPost("renew")]
+        public async Task<IActionResult> Renew()
+        {
+            var response = await _userService.Renew(User);
+
+            if (response == null)
+                return BadRequest(new { message = "Invalid token" });
+
+            return Ok(response);
+        }
     }
 }

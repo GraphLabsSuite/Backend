@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using GraphLabs.Backend.DAL;
+using GraphLabs.Backend.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -25,16 +26,8 @@ namespace GraphLabs.Backend.Api.Auth
             _appSettings = appSettings.Value;
         }
 
-        public async Task<LoginResponse> Authenticate(LoginRequest login)
+        private LoginResponse CreateLoggedInResponse(User user)
         {
-            var user = await _ctx.Users.SingleOrDefaultAsync(x => x.Email == login.Email);
-            if (user == null)
-                return null;
-            
-            var hash = _hashCalculator.Calculate(login.Password, user.PasswordSalt);
-            if (!hash.SequenceEqual(user.PasswordHash))
-                return null;
-
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -44,8 +37,9 @@ namespace GraphLabs.Backend.Api.Auth
                 {
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture)),
+                    new Claim(ClaimTypes.Role, user.GetType().Name),
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             
@@ -56,6 +50,33 @@ namespace GraphLabs.Backend.Api.Auth
                 LastName = user.LastName,
                 Token = tokenHandler.WriteToken(token)
             };
+        }
+        
+        public async Task<LoginResponse> Authenticate(LoginRequest login)
+        {
+            var user = await _ctx.Users.SingleOrDefaultAsync(x => x.Email == login.Email);
+            if (user == null)
+                return null;
+            
+            var hash = _hashCalculator.Calculate(login.Password, user.PasswordSalt);
+            if (!hash.SequenceEqual(user.PasswordHash))
+                return null;
+
+
+            return CreateLoggedInResponse(user);
+        }
+        
+        public async Task<LoginResponse> Renew(ClaimsPrincipal principal)
+        {
+            var email = principal.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return null;
+            
+            var user = await _ctx.Users.SingleOrDefaultAsync(x => x.Email == email);
+            if (user == null)
+                return null;
+
+            return CreateLoggedInResponse(user);
         }
     }
 }
