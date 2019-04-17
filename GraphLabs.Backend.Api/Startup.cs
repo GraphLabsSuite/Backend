@@ -7,6 +7,7 @@ using GraphLabs.Backend.Api.Auth;
 using GraphLabs.Backend.Api.Controllers;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
+using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Routing.Conventions;
@@ -173,7 +174,8 @@ namespace GraphLabs.Backend.Api
             taskVariant.HasRequired(v => v.TaskModule);
             
             // Users ===================================================================================================
-            var user = builder.EntityType<User>();
+            const string usersEntitySet = "Users";
+            var user = builder.EntitySet<User>(usersEntitySet).EntityType;
             user.HasKey(u => u.Id);
             user.Abstract();
             user.Ignore(u => u.PasswordHash);
@@ -197,6 +199,9 @@ namespace GraphLabs.Backend.Api
             downloadImageFunc.Parameter<string>("name");
             downloadImageFunc.Returns(typeof(IActionResult));
 
+            var currentUser = builder.Function(nameof(UsersController.CurrentUser));
+            currentUser.ReturnsFromEntitySet<User>(usersEntitySet);
+            
             builder.EnableLowerCamelCase();
             
             return builder.GetEdmModel();

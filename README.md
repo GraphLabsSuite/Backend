@@ -114,3 +114,6 @@ _Authorization_ : "Bearer бла-бла-бла", где бла-бла-бла - �
 > **POST** http://localhost:5000/odata/taskModules(1)/upload 
 _Body:_
 ```binary data: zip archive```
+
+**Запросить информацию о текущем пользователе:**
+> **GET** http://localhost:5000/odata/currentUser
