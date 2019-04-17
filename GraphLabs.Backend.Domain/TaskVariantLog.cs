@@ -16,5 +16,7 @@ namespace GraphLabs.Backend.Domain
 
         public virtual long StudentId { get; set; }
         public virtual Student Student { get; set; }
+        
+        public int Penalty { get; set; }
     }
 }
