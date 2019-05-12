@@ -48,9 +48,13 @@ namespace GraphLabs.Backend.Api
         {
             var migrationsAssembly = GetType().Assembly.FullName;
 
-            var dbPath = Environment.GetEnvironmentVariable("DB_FILE_PATH");
+            var postgresHost = Environment.GetEnvironmentVariable("DB_HOST");
+            var postgresDb = Environment.GetEnvironmentVariable("DB_NAME");
+            var postgresUser = Environment.GetEnvironmentVariable("DB_USER");
+            var postgresPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseSqlite($"Data Source={dbPath}", b => b.MigrationsAssembly(migrationsAssembly)));
+                o => o.UseNpgsql($"Host={postgresHost};Database={postgresDb};Username={postgresUser};Password={postgresPassword}", b => b.MigrationsAssembly(migrationsAssembly)));
 
             if (_environment.IsDevelopment())
             {

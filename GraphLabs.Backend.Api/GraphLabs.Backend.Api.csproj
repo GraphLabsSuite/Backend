@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Folder Include="Migrations" />
         <Folder Include="wwwroot\" />
     </ItemGroup>
 
@@ -37,6 +38,13 @@
       <_ContentIncludedByDefault Remove="wwwroot\modules\1\images\DontTouch.png" />
       <_ContentIncludedByDefault Remove="wwwroot\modules\1\images\Help.png" />
       <_ContentIncludedByDefault Remove="wwwroot\modules\1\images\Move.png" />
+      <_ContentIncludedByDefault Remove="publish\web.config" />
+      <_ContentIncludedByDefault Remove="publish\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="publish\appsettings.json" />
+      <_ContentIncludedByDefault Remove="publish\GraphLabs.Backend.Api.deps.json" />
+      <_ContentIncludedByDefault Remove="publish\GraphLabs.Backend.Api.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="publish\wwwroot\modules\1\asset-manifest.json" />
+      <_ContentIncludedByDefault Remove="publish\wwwroot\modules\1\manifest.json" />
     </ItemGroup>
 
 </Project>
