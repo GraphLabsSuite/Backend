@@ -61,7 +61,8 @@ namespace GraphLabs.Backend.Api.Controllers
                 Action = request.Action,
                 DateTime = DateTime.Now,
                 StudentId = student.Id,
-                VariantId = request.VariantId
+                VariantId = request.VariantId,
+                Penalty = request.Penalty ?? 0
             };
 
             await _db.TaskVariantLogs.AddAsync(logEntry);
@@ -75,6 +76,8 @@ namespace GraphLabs.Backend.Api.Controllers
             public string Action { get; set; }
         
             public long VariantId { get; set; }
+            
+            public int? Penalty { get; set; }
         }
 
         
