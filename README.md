@@ -112,6 +112,7 @@ _Authorization_ : "Bearer бла-бла-бла", где бла-бла-бла - �
 
 **Зарегистрировать новое действие:**
 > **POST** http://localhost:5000/odata/taskVariantLogs
+_Content-Type:_ application/json
 _Body:_
 ```json
 {

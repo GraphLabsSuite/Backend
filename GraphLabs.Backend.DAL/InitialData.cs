@@ -22,8 +22,8 @@ namespace GraphLabs.Backend.DAL
             yield return new TaskModule
             {
                 Id = 1,
-                Name = "Изоморфизм",
-                Description = "Даны два графа. Доказать их изоморфность путём наложения вершин одного графа на вершины другого, или обосновать, почему это невозможно.",
+                Name = "Шаблон",
+                Description = "Шаблон модуля.",
                 Version = "2.0"
             };
 
@@ -31,8 +31,17 @@ namespace GraphLabs.Backend.DAL
             yield return  new TaskModule
             {
                 Id = 2,
-                Name = "Модуль Лизы",
-                Description = "Описание",
+                Name = "Внешняя устойчивость",
+                Description = "Модуль Лизы",
+                Version = "1.0"
+            };
+            
+            // taskModule #3
+            yield return  new TaskModule
+            {
+                Id = 3,
+                Name = "Планарность",
+                Description = "Модуль Насти",
                 Version = "1.0"
             };
         }
