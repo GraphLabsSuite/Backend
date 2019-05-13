@@ -36,7 +36,7 @@ namespace GraphLabs.Backend.Api.Auth
                 Subject = new ClaimsIdentity(new Claim[] 
                 {
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture)),
+                    new Claim(ClaimTypes.Sid, user.Id.ToString(CultureInfo.InvariantCulture)),
                     new Claim(ClaimTypes.Role, user.GetType().Name),
                 }),
                 Expires = DateTime.UtcNow.AddDays(1),

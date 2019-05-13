@@ -1,13 +1,56 @@
-﻿using GraphLabs.Backend.Domain;
+﻿using System;
+using System.Data;
+using System.Data.Common;
+using GraphLabs.Backend.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace GraphLabs.Backend.DAL
 {
     public class GraphLabsContext : DbContext
     {
+        private readonly Lazy<IUserInfoService> _userInfoService;
+
         public GraphLabsContext(DbContextOptions<GraphLabsContext> options)
             : base(options)
         {
+            _userInfoService = new Lazy<IUserInfoService>(this.GetService<IUserInfoService>);
+        }
+
+        private DbConnection _dbConnection;
+        public override DatabaseFacade Database 
+        {
+            get
+            {
+                var db = base.Database;
+                if (_dbConnection == null)
+                {
+                    _dbConnection = db.GetDbConnection();
+                    _dbConnection.StateChange += DbConnectionOnStateChange; 
+                }
+
+                return db;
+            }
+        }
+
+        private void DbConnectionOnStateChange(object sender, StateChangeEventArgs e)
+        {
+            if (e.OriginalState == ConnectionState.Closed && e.CurrentState == ConnectionState.Open)
+            {
+                var enableRls = _userInfoService.Value.UserRole == nameof(Student) ? 1 : 0;
+                using (var cmd = _dbConnection.CreateCommand())
+                {
+                    cmd.CommandText = $"set backend.enableRls = {enableRls};";
+                    cmd.CommandType = CommandType.Text;
+                    cmd.ExecuteNonQuery();
+                }
+                using (var cmd = _dbConnection.CreateCommand())
+                {
+                    cmd.CommandText = $"set backend.userId = '{_userInfoService.Value.UserId}';";
+                    cmd.CommandType = CommandType.Text;
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         public DbSet<TaskModule> TaskModules { get; protected set; }
@@ -60,6 +103,17 @@ namespace GraphLabs.Backend.DAL
                 .HasForeignKey(l => l.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
             log.HasIndex(l => l.DateTime);
+        }
+
+        public override void Dispose()
+        {
+            if (_dbConnection != null)
+            {
+                _dbConnection.StateChange -= DbConnectionOnStateChange;
+                _dbConnection = null;
+            }
+
+            base.Dispose();
         }
     }
 }

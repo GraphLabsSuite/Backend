@@ -7,7 +7,6 @@ using GraphLabs.Backend.Api.Auth;
 using GraphLabs.Backend.Api.Controllers;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
-using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Routing.Conventions;
@@ -20,7 +19,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -102,6 +100,7 @@ namespace GraphLabs.Backend.Api
 
             services.AddScoped<UserService>();
             services.AddSingleton<PasswordHashCalculator>();
+            services.AddScoped<IUserInfoService, UserInfoService>();
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
             {
