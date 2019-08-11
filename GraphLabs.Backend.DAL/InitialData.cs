@@ -44,6 +44,15 @@ namespace GraphLabs.Backend.DAL
                 Description = "Модуль Насти",
                 Version = "1.0"
             };
+            
+            // taskModule #4
+            yield return  new TaskModule
+            {
+                Id = 4,
+                Name = "???",
+                Description = "Модуль Ани",
+                Version = "1.0"
+            };
         }
 
         public IEnumerable<TaskVariant> GetTaskVariants(IEnumerable<TaskModule> modules)
