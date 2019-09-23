@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphLabs.Backend.DAL;
@@ -20,7 +21,7 @@ namespace GraphLabs.Backend.Api
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File(@"logs\log.txt", rollOnFileSizeLimit: true, fileSizeLimitBytes: 1024 * 1024)
+                .WriteTo.File(Path.Combine("logs", "log.txt"), rollOnFileSizeLimit: true, fileSizeLimitBytes: 1024 * 1024)
                 .CreateLogger();
 
             try
