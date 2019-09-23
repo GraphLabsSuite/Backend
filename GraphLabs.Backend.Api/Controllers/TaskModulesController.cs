@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphLabs.Backend.Api.Infrastructure;
 using GraphLabs.Backend.DAL;
 using GraphLabs.Backend.Domain;
 using Microsoft.AspNet.OData;
@@ -22,14 +23,17 @@ namespace GraphLabs.Backend.Api.Controllers
         private readonly GraphLabsContext _db;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IContentTypeProvider _contentTypeProvider;
+        private readonly ModuleStore _moduleStore;
 
         public TaskModulesController(GraphLabsContext context,
             IHostingEnvironment hostingEnvironment,
-            IContentTypeProvider contentTypeProvider)
+            IContentTypeProvider contentTypeProvider,
+            ModuleStore moduleStore)
         {
             _db = context;
             _hostingEnvironment = hostingEnvironment;
             _contentTypeProvider = contentTypeProvider;
+            _moduleStore = moduleStore;
         }
 
         [EnableQuery]
@@ -71,27 +75,15 @@ namespace GraphLabs.Backend.Api.Controllers
             return result;
         }
 
-        private string GetModulePath(int key)
-            => Path.Combine("modules", key.ToString(CultureInfo.InvariantCulture));
+
         
         public IActionResult Download(int key, [FromODataUri]string path)
         {
-            path = path
-                .TrimStart('/')
-                .Replace('/', Path.DirectorySeparatorChar)
-                .Replace('\\', Path.DirectorySeparatorChar);
-            
-            var targetPath = Path.Combine(
-                GetModulePath(key),
-                path);
-            
-            var file = _hostingEnvironment.WebRootFileProvider.GetFileInfo(targetPath);
-        
-            if (file.Exists
-                && !file.IsDirectory
-                && _contentTypeProvider.TryGetContentType(targetPath, out var contentType))
+            var (file, contentType) = _moduleStore.Download(key, path);
+
+            if (file != null)
             {
-                return File(file.CreateReadStream(), contentType);
+                return File(file, contentType);
             }
             else
             {
@@ -101,29 +93,7 @@ namespace GraphLabs.Backend.Api.Controllers
         
         public IActionResult Upload(int key)
         {
-            var targetPath = Path.Combine(
-                _hostingEnvironment.WebRootPath,
-                GetModulePath(key));
-            
-            var targetDirectory = new DirectoryInfo(targetPath);
-            if (targetDirectory.Exists)
-                targetDirectory.Delete(true);
-
-            using (var stream = Request.Body)
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
-            {
-                archive.ExtractToDirectory(targetPath);
-            }
-            
-            var buildDirectory = new DirectoryInfo(Path.Combine(targetPath, "build"));
-            var tempPath = targetPath.TrimEnd('/', '\\') + Guid.NewGuid().ToString("N");
-            if (buildDirectory.Exists && targetDirectory.GetDirectories().Length == 1)
-            {
-                buildDirectory.MoveTo(tempPath);
-                targetDirectory.Delete(true);
-                Directory.Move(tempPath, targetPath);
-            }
-
+            _moduleStore.Upload(key, Request.Body);
             return Ok();
         }
     }
