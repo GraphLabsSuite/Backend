@@ -11,3 +11,4 @@
 /GraphLabs.Backend.Api/GraphLabs.sqlite
 /GraphLabs.Backend.Api/db
 /GraphLabs.Backend.Api/wwwroot/modules
+/GraphLabs.Backend.Api/logs
