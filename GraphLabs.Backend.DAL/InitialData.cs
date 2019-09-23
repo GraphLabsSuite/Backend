@@ -49,8 +49,35 @@ namespace GraphLabs.Backend.DAL
             yield return  new TaskModule
             {
                 Id = 4,
-                Name = "???",
-                Description = "Модуль Ани",
+                Name = "Изоморфизм",
+                Description = "Модуль Насти",
+                Version = "1.0"
+            };
+            
+            // taskModule #5
+            yield return  new TaskModule
+            {
+                Id = 5,
+                Name = "Построить граф по матрице смежности",
+                Description = "Модуль Эллины",
+                Version = "1.0"
+            };
+            
+            // taskModule #6
+            yield return  new TaskModule
+            {
+                Id = 6,
+                Name = "Построить матрицу смежности по графу",
+                Description = "Модуль Наташи",
+                Version = "1.0"
+            };
+            
+            // taskModule #7
+            yield return  new TaskModule
+            {
+                Id = 7,
+                Name = "Построить матрицу инцидентности по графу",
+                Description = "Модуль Наташи",
                 Version = "1.0"
             };
         }

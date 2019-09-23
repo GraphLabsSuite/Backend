@@ -105,13 +105,23 @@ namespace GraphLabs.Backend.Api.Controllers
                 _hostingEnvironment.WebRootPath,
                 GetModulePath(key));
             
-            if (Directory.Exists(targetPath))
-                Directory.Delete(targetPath, true);
+            var targetDirectory = new DirectoryInfo(targetPath);
+            if (targetDirectory.Exists)
+                targetDirectory.Delete(true);
 
             using (var stream = Request.Body)
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
             {
                 archive.ExtractToDirectory(targetPath);
+            }
+            
+            var buildDirectory = new DirectoryInfo(Path.Combine(targetPath, "build"));
+            var tempPath = targetPath.TrimEnd('/', '\\') + Guid.NewGuid().ToString("N");
+            if (buildDirectory.Exists && targetDirectory.GetDirectories().Length == 1)
+            {
+                buildDirectory.MoveTo(tempPath);
+                targetDirectory.Delete(true);
+                Directory.Move(tempPath, targetPath);
             }
 
             return Ok();

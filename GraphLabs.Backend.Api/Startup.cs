@@ -27,6 +27,8 @@ using Microsoft.OData.Edm;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Serilog;
+using Serilog.Events;
 using ServiceLifetime = Microsoft.OData.ServiceLifetime;
 
 namespace GraphLabs.Backend.Api
@@ -135,6 +137,8 @@ namespace GraphLabs.Backend.Api
                 app.UseHttpsRedirection();
             }
 
+            app.UseSerilogRequestLogging();
+            
             app.UseAuthentication();
             
             app.UseMvc(builder =>

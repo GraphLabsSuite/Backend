@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphLabs.Backend.DAL;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Events;
 
 namespace GraphLabs.Backend.Api
 {
@@ -12,21 +15,42 @@ namespace GraphLabs.Backend.Api
     {
         public static async Task Main(string[] args)
         {
-            var webHost = CreateWebHostBuilder(args).Build();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .WriteTo.File(@"logs\log.txt", rollOnFileSizeLimit: true, fileSizeLimitBytes: 1024 * 1024)
+                .CreateLogger();
 
-            using (var scope = webHost.Services.CreateScope())
-            using (var context = scope.ServiceProvider.GetRequiredService<GraphLabsContext>())
+            try
             {
-                await InitializeDb(context, new InitialData(new PasswordHashCalculator()));
-            }
+                Log.Information("Starting web host");
+                var webHost = CreateWebHostBuilder(args).Build();
+
+                using (var scope = webHost.Services.CreateScope())
+                using (var context = scope.ServiceProvider.GetRequiredService<GraphLabsContext>())
+                {
+                    await InitializeDb(context, new InitialData(new PasswordHashCalculator()));
+                }
             
-            await webHost.RunAsync();
+                await webHost.RunAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedly");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args)
             => WebHost
                 .CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseSerilog();
         
         
         private static async Task InitializeDb(GraphLabsContext context, InitialData initialData)
