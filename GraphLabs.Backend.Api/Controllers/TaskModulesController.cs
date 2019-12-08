@@ -59,13 +59,15 @@ namespace GraphLabs.Backend.Api.Controllers
             }
             
             var variantId = variants[new Random().Next(0, variants.Length)];
-            var selectedVariant = await _db.TaskVariants.SingleAsync(v => v.Id == variantId);
+            var selectedVariant = await _db.TaskVariants
+                .Include(v => v.TaskModule)
+                .SingleAsync(v => v.Id == variantId);
 
             var result = new ContentResult
             {
                 StatusCode = StatusCodes.Status200OK,
                 ContentType = "application/json",
-                Content = $@"{{""data"": {selectedVariant.VariantData}, ""meta"": {{ ""name"": ""{selectedVariant.Name}"", ""id"": ""{selectedVariant.Id}"" }} }}"
+                Content = TaskVariantConverter.ToJson(selectedVariant)
             };
 
             return result;

@@ -95,9 +95,68 @@ _Authorization_ : "Bearer бла-бла-бла", где бла-бла-бла - �
 **Список всех вариантов:**
 > **GET** http://localhost:5000/odata/taskVariants
 
-**Вариант с идентификатором 5:**
-> **GET** http://localhost:5000/odata/taskVariants(5)
+**Json варианта с идентификатором 5:**
+> **GET** http://localhost:5000/odata/taskVariants(5)/json
 
+**Обновить вариант с идентификатором 5:**
+> **POST** http://localhost:5000/odata/taskVariants(5)
+
+Для создания нового варианта передайте идентификатор 0 и в URL и в теле (meta/id=0). 
+
+_Content-Type:_ application/json
+
+_Body:_
+```json
+{
+  "data": [
+    {
+      "type": "graph",
+      "value": {
+        "vertices": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+        ],
+        "edges": [
+          {
+            "source": "1",
+            "target": "2"
+          },
+          {
+            "source": "2",
+            "target": "3"
+          },
+          {
+            "source": "3",
+            "target": "4"
+          },
+          {
+            "source": "4",
+            "target": "5"
+          },
+          {
+            "source": "5",
+            "target": "1"
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "name": "Вариант 5",
+    "id": "5",
+    "moduleId": "2"
+  }
+}
+```
+> в ответе придёт json ```{"@odata.context":"http://localhost:5000/odata/$metadata#Edm.Int64","value":1}```,
+> где value - идентификатор созданного/обновлённого варианта
+
+**Удалить вариант с идентификатором 22:**
+> **DELETE** http://localhost:5000/odata/taskVariants(22)
+>
 **Список всех студентов:**
 > **GET** http://localhost:5000/odata/students
 

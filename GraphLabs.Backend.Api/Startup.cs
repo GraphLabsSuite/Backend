@@ -103,6 +103,7 @@ namespace GraphLabs.Backend.Api
             services.AddScoped<UserService>();
             services.AddSingleton<PasswordHashCalculator>();
             services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<TaskVariantConverter>();
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
             {
@@ -179,6 +180,8 @@ namespace GraphLabs.Backend.Api
             var taskVariant = builder.EntitySet<TaskVariant>("TaskVariants").EntityType;
             taskVariant.HasKey(v => v.Id);
             taskVariant.HasRequired(v => v.TaskModule);
+
+            taskVariant.Function(nameof(TaskVariantsController.Json)).Returns<IActionResult>();
             
             // Users ===================================================================================================
             const string usersEntitySet = "Users";
