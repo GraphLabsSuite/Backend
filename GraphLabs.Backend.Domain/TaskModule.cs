@@ -13,6 +13,8 @@ namespace GraphLabs.Backend.Domain
         public virtual string Description { get; set; }
         
         public virtual string Version { get; set; }
+
+        public virtual Subject Subject { get; set; }
         
         public virtual ICollection<TaskVariant> Variants { get; set; }
     }

@@ -16,5 +16,7 @@
         public virtual byte[] PasswordHash { get; set; }
         
         public virtual byte[] PasswordSalt { get; set; }
+
+        public virtual string Token { get; set; }
     }
 }
