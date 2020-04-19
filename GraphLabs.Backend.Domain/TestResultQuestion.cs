@@ -10,7 +10,7 @@ namespace GraphLabs.Backend.Domain
 
         public virtual string Question { get; set; }
 
-        public virtual string Subject { get; set; }
+        public virtual Subject Subject { get; set; }
 
         public virtual ICollection<TestStudentAnswer> TestStudentAnswers { get; set; }
     
