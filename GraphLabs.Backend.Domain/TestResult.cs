@@ -12,12 +12,12 @@ namespace GraphLabs.Backend.Domain
 
         public virtual int Mark { get; set; }
 
-        public enum MarkEU : int { F, E, D, C, B, A }
+        public virtual MarkEU MarkEU { get; set; }
 
-        public enum MarkRU : int { Two = 2, Three = 3, Four = 4, Five = 5 }
+        public virtual MarkRU MarkRU { get; set; }
 
         public virtual Student Student { get; set; }
 
-        public virtual ICollection<TestQuestion> Questions { get; set; }
+        public virtual ICollection<TestResultQuestion> TestResultQuestions { get; set; }
     }
 }

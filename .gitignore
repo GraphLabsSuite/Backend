@@ -2,6 +2,7 @@
 /.idea
 /.vs
 /*.user
+/GraphLabs.Backend.Domain/GraphLabs.Backend.Domain.csproj.user
 
 # Build results
 [Dd]ebug/

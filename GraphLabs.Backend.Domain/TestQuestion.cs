@@ -8,15 +8,11 @@ namespace GraphLabs.Backend.Domain
     {
         public virtual long Id { get; set; }
 
-        public virtual string Description { get; set; }
+        public virtual string PlainText { get; set; }
 
-        public enum Difficulty : int { Three, Four, Five }
+        public virtual Difficulty Difficulty { get; set; }
 
         public virtual int MaxScore { get; set; }
-
-        public virtual string ImageURL { get; set; }
-
-        public virtual TestResult TestResult { get; set; }
 
         public virtual Subject Subject { get; set; }
 
