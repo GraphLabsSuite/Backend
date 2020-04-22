@@ -14,6 +14,8 @@ namespace GraphLabs.Backend.Domain
 
         public virtual bool IsRight { get; set; }
 
-        public virtual TestResultQuestion TestResultQuestion { get; set; }
+        public virtual TestResult TestResult { get; set; }
+
+        public virtual TestQuestionVersion TestQuestionVersion { get; set; }
     }
 }

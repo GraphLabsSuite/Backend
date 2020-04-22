@@ -8,14 +8,8 @@ namespace GraphLabs.Backend.Domain
     {
         public virtual long Id { get; set; }
 
-        public virtual string PlainText { get; set; }
-
-        public virtual Difficulty Difficulty { get; set; }
-
-        public virtual int MaxScore { get; set; }
-
         public virtual Subject Subject { get; set; }
 
-        public virtual ICollection<TestAnswer> Answers { get; set; }
+        public virtual ICollection<TestQuestionVersion> TestQuestionVersions { get; set; }
     }
 }

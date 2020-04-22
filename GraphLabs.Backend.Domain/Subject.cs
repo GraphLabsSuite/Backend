@@ -15,7 +15,5 @@ namespace GraphLabs.Backend.Domain
         public virtual ICollection<TaskModule> TaskModules { get; set; }
 
         public virtual ICollection<TestQuestion> TestQuestions { get; set; }
-
-        public virtual ICollection<TestResultQuestion> TestResultQuestions { get; set; }
     }
 }

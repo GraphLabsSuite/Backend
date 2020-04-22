@@ -10,7 +10,7 @@ namespace GraphLabs.Backend.Domain
 
         public virtual DateTime DateTime { get; set; }
 
-        public virtual int Mark { get; set; }
+        public virtual int Score { get; set; }
 
         public virtual MarkEU MarkEU { get; set; }
 
@@ -18,6 +18,6 @@ namespace GraphLabs.Backend.Domain
 
         public virtual Student Student { get; set; }
 
-        public virtual ICollection<TestResultQuestion> TestResultQuestions { get; set; }
+        public virtual ICollection<TestStudentAnswer> TestStudentAnswer { get; set; }
     }
 }
