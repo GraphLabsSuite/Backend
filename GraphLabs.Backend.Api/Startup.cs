@@ -49,12 +49,21 @@ namespace GraphLabs.Backend.Api
             var migrationsAssembly = GetType().Assembly.FullName;
 
             var postgresHost = Environment.GetEnvironmentVariable("DB_HOST");
+            var postgresPort = Environment.GetEnvironmentVariable("DB_PORT");
+            postgresPort = string.IsNullOrWhiteSpace(postgresPort)
+                ? "5432"
+                : postgresPort;
             var postgresDb = Environment.GetEnvironmentVariable("DB_NAME");
             var postgresUser = Environment.GetEnvironmentVariable("DB_USER");
             var postgresPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseNpgsql($"Host={postgresHost};Database={postgresDb};Username={postgresUser};Password={postgresPassword}", b => b.MigrationsAssembly(migrationsAssembly)));
+                o =>
+                {
+                    o.UseNpgsql(
+                        $"Host={postgresHost};Port={postgresPort};Database={postgresDb};Username={postgresUser};Password={postgresPassword}",
+                        b => b.MigrationsAssembly(migrationsAssembly));
+                });
 
             if (_environment.IsDevelopment())
             {
