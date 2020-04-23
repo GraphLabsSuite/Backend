@@ -1,8 +1,8 @@
 # IDE
 /.idea
 /.vs
-/*.user
-/GraphLabs.Backend.Domain/GraphLabs.Backend.Domain.csproj.user
+*.user
+
 
 # Build results
 [Dd]ebug/

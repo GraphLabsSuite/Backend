@@ -15,8 +15,18 @@ namespace GraphLabs.Backend.DAL
         {
             _calculator = calculator;
         }
-        
-        public IEnumerable<TaskModule> GetTaskModules()
+
+        public IEnumerable<Subject> GetSubjects()
+        {
+            yield return new Subject
+            {
+                Id = 1,
+                Name = "Тема 1",
+                Description = "Описание темы 1"
+            };
+        }
+
+        public IEnumerable<TaskModule> GetTaskModules(IEnumerable<Subject> subjects)
         {
             // taskModule #1
             yield return new TaskModule
@@ -24,7 +34,8 @@ namespace GraphLabs.Backend.DAL
                 Id = 1,
                 Name = "Шаблон",
                 Description = "Шаблон модуля.",
-                Version = "2.0"
+                Version = "2.0",
+                Subject = subjects.ElementAt(0)
             };
 
             // taskModule #2
@@ -33,7 +44,8 @@ namespace GraphLabs.Backend.DAL
                 Id = 2,
                 Name = "Внешняя устойчивость",
                 Description = "Модуль Лизы",
-                Version = "1.0"
+                Version = "1.0",
+                Subject = subjects.ElementAt(0)
             };
             
             // taskModule #3
@@ -42,7 +54,8 @@ namespace GraphLabs.Backend.DAL
                 Id = 3,
                 Name = "Планарность",
                 Description = "Модуль Насти",
-                Version = "1.0"
+                Version = "1.0",
+                Subject = subjects.ElementAt(0)
             };
             
             // taskModule #4
@@ -51,7 +64,8 @@ namespace GraphLabs.Backend.DAL
                 Id = 4,
                 Name = "Изоморфизм",
                 Description = "Модуль Насти",
-                Version = "1.0"
+                Version = "1.0",
+                Subject = subjects.ElementAt(0)
             };
             
             // taskModule #5
@@ -60,7 +74,8 @@ namespace GraphLabs.Backend.DAL
                 Id = 5,
                 Name = "Построить граф по матрице смежности",
                 Description = "Модуль Эллины",
-                Version = "1.0"
+                Version = "1.0",
+                Subject = subjects.ElementAt(0)
             };
             
             // taskModule #6
@@ -69,7 +84,8 @@ namespace GraphLabs.Backend.DAL
                 Id = 6,
                 Name = "Построить матрицу смежности по графу",
                 Description = "Модуль Наташи",
-                Version = "1.0"
+                Version = "1.0",
+                Subject = subjects.ElementAt(0)
             };
             
             // taskModule #7
@@ -78,7 +94,8 @@ namespace GraphLabs.Backend.DAL
                 Id = 7,
                 Name = "Построить матрицу инцидентности по графу",
                 Description = "Модуль Наташи",
-                Version = "1.0"
+                Version = "1.0",
+                Subject = subjects.ElementAt(0)
             };
         }
 
