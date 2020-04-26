@@ -2,6 +2,7 @@
 /.idea
 /.vs
 *.user
+*.csproj
 
 
 # Build results
@@ -13,3 +14,5 @@
 /GraphLabs.Backend.Api/db
 /GraphLabs.Backend.Api/wwwroot/modules
 /GraphLabs.Backend.Api/logs
+/GraphLabs.Backend.Api/Properties/launchSettings.json
+

@@ -16,7 +16,7 @@ namespace GraphLabs.Backend.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.Subject", b =>
@@ -30,7 +30,7 @@ namespace GraphLabs.Backend.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subject");
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TaskModule", b =>
@@ -42,7 +42,7 @@ namespace GraphLabs.Backend.Api.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<long?>("SubjectId");
+                    b.Property<long>("SubjectId");
 
                     b.Property<string>("Version");
 
@@ -107,13 +107,13 @@ namespace GraphLabs.Backend.Api.Migrations
 
                     b.Property<bool>("IsRight");
 
-                    b.Property<long?>("TestQuestionVersionId");
+                    b.Property<long>("TestQuestionVersionId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TestQuestionVersionId");
 
-                    b.ToTable("TestAnswer");
+                    b.ToTable("TestAnswers");
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestQuestion", b =>
@@ -121,13 +121,13 @@ namespace GraphLabs.Backend.Api.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<long?>("SubjectId");
+                    b.Property<long>("SubjectId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("TestQuestion");
+                    b.ToTable("TestQuestions");
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestQuestionVersion", b =>
@@ -141,13 +141,13 @@ namespace GraphLabs.Backend.Api.Migrations
 
                     b.Property<string>("PlainText");
 
-                    b.Property<long?>("TestQuestionId");
+                    b.Property<long>("TestQuestionId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TestQuestionId");
 
-                    b.ToTable("TestQuestionVersion");
+                    b.ToTable("TestQuestionVersions");
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestResult", b =>
@@ -163,13 +163,15 @@ namespace GraphLabs.Backend.Api.Migrations
 
                     b.Property<int>("Score");
 
-                    b.Property<long?>("StudentId");
+                    b.Property<long>("StudentId");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DateTime");
+
                     b.HasIndex("StudentId");
 
-                    b.ToTable("TestResult");
+                    b.ToTable("TestResults");
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestStudentAnswer", b =>
@@ -183,17 +185,15 @@ namespace GraphLabs.Backend.Api.Migrations
 
                     b.Property<bool>("IsRight");
 
-                    b.Property<long?>("TestQuestionVersionId");
-
-                    b.Property<long?>("TestResultId");
+                    b.Property<long>("TestResultId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TestQuestionVersionId");
+                    b.HasIndex("AnswerId");
 
                     b.HasIndex("TestResultId");
 
-                    b.ToTable("TestStudentAnswer");
+                    b.ToTable("TestStudentAnswers");
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.User", b =>
@@ -253,7 +253,8 @@ namespace GraphLabs.Backend.Api.Migrations
                 {
                     b.HasOne("GraphLabs.Backend.Domain.Subject", "Subject")
                         .WithMany("TaskModules")
-                        .HasForeignKey("SubjectId");
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TaskVariant", b =>
@@ -281,39 +282,45 @@ namespace GraphLabs.Backend.Api.Migrations
                 {
                     b.HasOne("GraphLabs.Backend.Domain.TestQuestionVersion", "TestQuestionVersion")
                         .WithMany("TestAnswers")
-                        .HasForeignKey("TestQuestionVersionId");
+                        .HasForeignKey("TestQuestionVersionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestQuestion", b =>
                 {
                     b.HasOne("GraphLabs.Backend.Domain.Subject", "Subject")
                         .WithMany("TestQuestions")
-                        .HasForeignKey("SubjectId");
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestQuestionVersion", b =>
                 {
                     b.HasOne("GraphLabs.Backend.Domain.TestQuestion", "TestQuestion")
                         .WithMany("TestQuestionVersions")
-                        .HasForeignKey("TestQuestionId");
+                        .HasForeignKey("TestQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestResult", b =>
                 {
                     b.HasOne("GraphLabs.Backend.Domain.Student", "Student")
                         .WithMany("TestResults")
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GraphLabs.Backend.Domain.TestStudentAnswer", b =>
                 {
                     b.HasOne("GraphLabs.Backend.Domain.TestQuestionVersion", "TestQuestionVersion")
                         .WithMany("TestStudentAnswers")
-                        .HasForeignKey("TestQuestionVersionId");
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GraphLabs.Backend.Domain.TestResult", "TestResult")
                         .WithMany("TestStudentAnswer")
-                        .HasForeignKey("TestResultId");
+                        .HasForeignKey("TestResultId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

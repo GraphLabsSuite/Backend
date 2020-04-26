@@ -171,6 +171,12 @@ namespace GraphLabs.Backend.Api
                 Namespace = "GraphLabs"
             };
 
+            // Subjects =============================================================================================
+            var subject = builder.EntitySet<Subject>("Subjects").EntityType;
+            subject.HasKey(m => m.Id);
+            subject.HasMany(m => m.TaskModules);
+            subject.HasMany(m => m.TestQuestions);
+
             // TaskModules =============================================================================================
             var taskModule = builder.EntitySet<TaskModule>("TaskModules").EntityType;
             taskModule.HasKey(m => m.Id);
