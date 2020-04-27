@@ -38,10 +38,6 @@ namespace GraphLabs.Backend.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var subject = new Subject();
-            var id = TryExecute(() => (_db.Subjects.Last().Id) + 1, "Не удалось извлечь subject id");
-            subject.Id = id;
-
             var json = await Request.GetBodyAsString();
             var jsonData = TryExecute(() => JObject.Parse(json), "Не удалось распарсить данные.");
 
@@ -50,15 +46,19 @@ namespace GraphLabs.Backend.Api.Controllers
             {
                 throw new SubjectConvertException("Полученное имя предмета пусто");
             }
-            subject.Name = name;
 
             var description = TryExecute(() => jsonData["description"].Value<string>(), "Не удалось прочитать значение subject description");
             if (description == null || description == "")
             {
                 throw new SubjectConvertException("Полученное описание предмета пусто");
             }
-            subject.Description = description;
-            
+
+            var subject = new Subject
+            {
+                Name = name,
+                Description = description
+            };
+
             _db.Subjects.Add(subject);
             await _db.SaveChangesAsync();
 
