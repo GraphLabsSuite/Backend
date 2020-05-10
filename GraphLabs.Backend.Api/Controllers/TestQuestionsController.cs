@@ -8,12 +8,13 @@ using GraphLabs.Backend.Domain;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
 namespace GraphLabs.Backend.Api.Controllers
 {
     [ODataRoutePrefix("testQuestions")]
-    public class TestQuestionsController : Controller
+    public class TestQuestionsController : ODataController
     {
         private readonly GraphLabsContext _db;
 
@@ -28,7 +29,6 @@ namespace GraphLabs.Backend.Api.Controllers
             return _db.TestQuestions;
         }
 
-        
         [EnableQuery]
         [ODataRoute("({key})")]
         public SingleResult<TestQuestion> Get(long key)
@@ -36,126 +36,84 @@ namespace GraphLabs.Backend.Api.Controllers
             return SingleResult.Create(_db.TestQuestions.Where(t => t.Id == key));
         }
 
-        
-        // не работает route, что странно, в TaskVariantsLogsController это есть
-        // передаю TestQuestion.Id(то есть key) в json
-        // если key == null, то создается новый вопрос, иначе дополняется в ветку версий вопросов
         [HttpPost]
-        public async Task<IActionResult> Post()
+        [ODataRoute("({key})")]
+        public async Task<IActionResult> Post([FromBody]CreateRequest request, long key)
         {
-            //Проверка полученных данных
-            var json = await Request.GetBodyAsString();
-            var jsonData = TryExecute(() => JObject.Parse(json), "Не удалось распарсить данные.");
-            var key = jsonData["key"];
+            if (request == null ||
+                request.MaxScore == 0 ||
+                string.IsNullOrEmpty(request.PlainText) ||
+                string.IsNullOrEmpty(request.Difficulty))
+                return BadRequest();
 
-            var plainText = TryExecute(() => jsonData["plain_text"].Value<string>(), "Не удалось прочитать значение TestQuestion plain_text");
-            if (plainText == null || plainText == "")
+            TestQuestion testQuestion;
+            var testQuestionVersion = new TestQuestionVersion
             {
-                throw new TestQuestionConvertException("Полученное значение plain_text пусто");
-            }
+                PlainText = request.PlainText,
+                Difficulty = GetDifficulty(request.Difficulty),
+                MaxScore = request.MaxScore
+            };
 
-            var difficulty = new Difficulty();
-            var difficultyString = TryExecute(() => jsonData["difficulty"].Value<string>(), "Не удалось прочитать значение TestQuestion difficulty");
-            if (difficultyString == null || difficultyString == "")
+            if (key == 0)
             {
-                throw new TestQuestionConvertException("Полученное значение difficulty пусто");
-            }
-            // костыль start
-            switch (difficultyString)
-            {
-                case "Three":
-                    difficulty = Difficulty.Three;
-                    break;
-                case "Four":
-                    difficulty = Difficulty.Four;
-                    break;
-                case "Five":
-                    difficulty = Difficulty.Five;
-                    break;
-                default:
-                    throw new TestQuestionConvertException("Полученное значение difficulty не соответсвует требованиям");
-            }
-            // костыль end    
+                //Create TestQuestion and TestQuestion.TestQuestionVersion
+                var subject = _db.Subjects.Single(s => s.Id == request.SubjectId);
+                if (subject == null)
+                    return BadRequest();
 
-            var maxScore = TryExecute(() => jsonData["max_score"].Value<int>(), "Не удалось прочитать значение TestQuestion max_score");
-            if (maxScore.Equals(null))
-            {
-                throw new TestQuestionConvertException("Полученное значение max_score пусто");
-            }
-
-            if (key.Type != JTokenType.Null)
-            {
-                //Update
-                var testQuestion = _db.TestQuestions.Single(q => q.Id == (long)key);
-                if (testQuestion == null)
+                testQuestion = new TestQuestion
                 {
-                    throw new TestQuestionConvertException("Идентификатор key не совпадает ни с одним TestQuestion.Id");
-                }
-
-                var testQuestionVersion = new TestQuestionVersion
-                {
-                    PlainText = plainText,
-                    Difficulty = difficulty,
-                    MaxScore = maxScore,
-                    TestQuestion = testQuestion
+                    TestQuestionVersions = new List<TestQuestionVersion> { testQuestionVersion },
+                    Subject = subject
                 };
 
-                _db.TestQuestionVersions.Add(testQuestionVersion);    
+                if (subject.TestQuestions == null)
+                {
+                    subject.TestQuestions = new List<TestQuestion> { testQuestion };
+                }
+                else
+                {
+                    subject.TestQuestions.Add(testQuestion);
+                }
+                _db.TestQuestions.Add(testQuestion);
             }
             else
             {
-                //Create
-                var idSubject = TryExecute(() => jsonData["subject"].Value<long>(), "Не удалось прочитать значение TestQuestion subject");
-                if (idSubject.Equals(null))
-                {
-                    throw new TestQuestionConvertException("Полученное значение subject пусто");
-                }
-                
-                var testQuestion = new TestQuestion();
-                testQuestion.Subject = _db.Subjects.Single(s => s.Id == idSubject);
-
-                var testQuestionVersion = new TestQuestionVersion
-                {
-                    PlainText = plainText,
-                    Difficulty = difficulty,
-                    MaxScore = maxScore,
-                    TestQuestion = testQuestion
-                };
-
-                var collection = new Collection<TestQuestionVersion>();
-                collection.Add(testQuestionVersion);
-
-                testQuestion.TestQuestionVersions = collection;
-
-                _db.TestQuestionVersions.Add(testQuestionVersion);
-                _db.TestQuestions.Add(testQuestion);
+                //Update TestQuestion.TestQuestionVersion
+                testQuestion = _db.TestQuestions.Include(q => q.TestQuestionVersions).Single(q => q.Id == key);
+                testQuestion.TestQuestionVersions.Add(testQuestionVersion);
             }
-            // сделать добавление в таблицу Subjects
+
+            testQuestionVersion.TestQuestion = testQuestion;
+            _db.TestQuestionVersions.Add(testQuestionVersion);
+
             await _db.SaveChangesAsync();
-            return Ok();
+            return Ok(testQuestionVersion.Id);
         }
 
-        private class TestQuestionConvertException : Exception
+        public class CreateRequest
         {
-            public TestQuestionConvertException(string error) : base(error)
-            {
-            }
+            public string PlainText { get; set; }
 
-            public TestQuestionConvertException(string error, Exception inner) : base(error, inner)
-            {
-            }
+            public string Difficulty { get; set; }
+
+            public int MaxScore { get; set; }
+
+            public long? SubjectId { get; set; }
         }
 
-        private static T TryExecute<T>(Func<T> f, string errorMessage)
+        private Difficulty GetDifficulty(string diff)
         {
-            try
+            switch (diff)
             {
-                return f();
+                case "Three":
+                    return Difficulty.Three;
+                case "Four":
+                    return Difficulty.Four;
+                case "Five":
+                    return Difficulty.Five;
             }
-            catch (Exception e)
-            {
-                throw new TestQuestionConvertException(errorMessage, e);
-            }
+            return Difficulty.Three;
         }
     }
 }

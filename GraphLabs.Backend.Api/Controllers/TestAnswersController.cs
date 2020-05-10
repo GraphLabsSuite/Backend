@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphLabs.Backend.DAL;
@@ -8,12 +7,11 @@ using GraphLabs.Backend.Domain;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Routing;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace GraphLabs.Backend.Api.Controllers
 {
     [ODataRoutePrefix("testAnswers")]
-    public class TestAnswersController : Controller
+    public class TestAnswersController : ODataController
     {
         private readonly GraphLabsContext _db;
 
@@ -36,60 +34,59 @@ namespace GraphLabs.Backend.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post()
+        [ODataRoute("({key})")]
+        public async Task<IActionResult> Post([FromBody]CreateRequest request, long key)
         {
-            var json = await Request.GetBodyAsString();
-            var jsonData = TryExecute(() => JObject.Parse(json), "Не удалось распарсить данные.");
-            var key = TryExecute(() => jsonData["key"].Value<long>(), "Не удалось прочитать значение key");
-            var testQuestionVersion = TryExecute(() => _db.TestQuestionVersions.Single(v => v.Id == key), $"Не существует вопроса с ключом {key}");
-            
-            var answer = TryExecute(() => jsonData["answer"].Value<string>(), "Не удалось прочитать значение TestAnswer answer");
-            if (answer == null || answer == "")
-            {
-                throw new TestAnswerConvertException("Полученное значение answer пусто");
-            }
+            if (request == null || string.IsNullOrEmpty(request.Answer))
+                return BadRequest();
 
-            var isRight = TryExecute(() => jsonData["is_right"].Value<bool>(), "Не удалось прочитать значение TestAnswer is_right");
-            
+            var testQuestionVersion = _db.TestQuestionVersions.Single(v => v.Id == key);
+            if (testQuestionVersion == null)
+                return BadRequest();
+
             var testAnswer = new TestAnswer
             {
-                Answer = answer,
-                IsRight = isRight,
+                Answer = request.Answer,
+                IsRight = request.IsRight,
                 TestQuestionVersion = testQuestionVersion
             };
-            _db.TestAnswers.Add(testAnswer);
-
-            var collection = testQuestionVersion.TestAnswers;
-            collection.Add(testAnswer);
-
-            testQuestionVersion.TestAnswers = collection;
+            
+            if (testQuestionVersion.TestAnswers == null)
+            {
+                testQuestionVersion.TestAnswers = new List<TestAnswer> { testAnswer };
+            }
+            else
+            {
+                testQuestionVersion.TestAnswers.Add(testAnswer);
+            }
 
             await _db.SaveChangesAsync();
-            return Ok(key);
+            return Ok(testAnswer.Id);
         }
 
-        private class TestAnswerConvertException : Exception
+        [HttpDelete]
+        [ODataRoute("({key})")]
+        public async Task<IActionResult> Delete(long key)
         {
-            public TestAnswerConvertException(string error) : base(error)
+            var answer = _db.TestAnswers.Single(v => v.Id == key);
+            if (answer != null)
             {
+                _db.TestAnswers.Remove(answer);
+                await _db.SaveChangesAsync();
+            }
+            else
+            {
+                return NotFound();
             }
 
-            public TestAnswerConvertException(string error, Exception inner) : base(error, inner)
-            {
-            }
+            return Ok();
         }
 
-        private static T TryExecute<T>(Func<T> f, string errorMessage)
+        public class CreateRequest
         {
-            try
-            {
-                return f();
-            }
-            catch (Exception e)
-            {
-                throw new TestAnswerConvertException(errorMessage, e);
-            }
-        }
+            public string Answer { get; set; }
 
+            public bool IsRight { get; set; }
+        }
     }
 }

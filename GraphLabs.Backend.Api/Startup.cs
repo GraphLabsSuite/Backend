@@ -190,6 +190,8 @@ namespace GraphLabs.Backend.Api
             testQuestionVersion.HasMany(v => v.TestAnswers);
             testQuestionVersion.HasRequired(v => v.TestQuestion);
 
+            //testQuestionVersion.Function(nameof(TestQuestionVersionsController.CreateVariant)).Returns<IActionResult>();
+
             // TesAnswers ==============================================================================================
             var testAnswer = builder.EntitySet<TestAnswer>("TestAnswers").EntityType;
             testAnswer.HasKey(a => a.Id);

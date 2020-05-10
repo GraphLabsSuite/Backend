@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace GraphLabs.Backend.Api.Controllers
 {
     [ODataRoutePrefix("subjects")]
-    public class SubjectsController : Controller
+    public class SubjectsController : ODataController
     {
         private readonly GraphLabsContext _db;
 
@@ -36,56 +36,30 @@ namespace GraphLabs.Backend.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post()
+        public async Task<IActionResult> Post([FromBody]CreateRequest request)
         {
-            var json = await Request.GetBodyAsString();
-            var jsonData = TryExecute(() => JObject.Parse(json), "Не удалось распарсить данные.");
-
-            var name = TryExecute(() => jsonData["name"].Value<string>(), "Не удалось прочитать значение subject name");
-            if (name == null || name == "")
-            {
-                throw new SubjectConvertException("Полученное имя предмета пусто");
-            }
-
-            var description = TryExecute(() => jsonData["description"].Value<string>(), "Не удалось прочитать значение subject description");
-            if (description == null || description == "")
-            {
-                throw new SubjectConvertException("Полученное описание предмета пусто");
-            }
+            if (request == null ||
+                string.IsNullOrEmpty(request.Name) ||
+                string.IsNullOrEmpty(request.Description))
+                return BadRequest();
 
             var subject = new Subject
             {
-                Name = name,
-                Description = description
+                Name = request.Name,
+                Description = request.Description
             };
 
             _db.Subjects.Add(subject);
             await _db.SaveChangesAsync();
 
-            return Ok();
+            return Ok(subject.Id);
         }
 
-        private class SubjectConvertException : Exception
+        public class CreateRequest
         {
-            public SubjectConvertException(string error) : base(error)
-            {
-            }
+            public string Name { get; set; }
 
-            public SubjectConvertException(string error, Exception inner) : base(error, inner)
-            {
-            }
-        }
-
-        private static T TryExecute<T>(Func<T> f, string errorMessage)
-        {
-            try
-            {
-                return f();
-            }
-            catch (Exception e)
-            {
-                throw new SubjectConvertException(errorMessage, e);
-            }
+            public string Description { get; set; }
         }
     }
 }
