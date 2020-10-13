@@ -13,6 +13,7 @@
 - [X] Научить логи заданий получать пользователя из данных аутентификации
 - [ ] Logout
 - [x] Лог выполнения
+- [x] Подсистема тестирования студентов
 
 ## Технологии
 * Asp.Net Core
@@ -65,6 +66,7 @@ _Authorization_ : "Bearer бла-бла-бла", где бла-бла-бла - �
 
 
 ## Примеры использования
+#### Лабораторный комплекс
 **Метаданные:**
 > **GET** http://localhost:5000/odata/$metadata
 
@@ -188,3 +190,129 @@ _Body:_
 
 **Запросить информацию о текущем пользователе:**
 > **GET** http://localhost:5000/odata/currentUser
+
+#### Подсистема тестирования студентов
+
+**Список тем:**
+> **GET** http://localhost:5000/odata/subjects
+
+**Тема с идентификатором 1:**
+> **GET** http://localhost:5000/odata/subjects(1)
+
+**Загрузить название новой темы:**
+> **POST** http://localhost:5000/odata/subjects
+_Content-Type:_ application/json
+_Body:_
+```json
+{
+	"Name": "Название темы",
+	"Description": "Описание темы"
+}
+```
+
+**Список вопросов:**
+> **GET** http://localhost:5000/odata/testQuestions
+
+**Вопрос с идентификатором 1:**
+> **GET** http://localhost:5000/odata/testQuestions(1)
+
+**Загрузить новый вопрос:**
+> **POST** http://localhost:5000/odata/testQuestions
+_Content-Type:_ application/json
+_Body:_
+```json
+{
+	"PlainText": "Текст задания",
+	"Difficulty": "Four",
+	"MaxScore": 10,
+	"SubjectId": 2
+}
+```
+
+**Обновить вопрос с идентификатором 1:**
+> **POST** http://localhost:5000/odata/testQuestions(1)
+_Content-Type:_ application/json
+_Body:_
+```json
+{
+	"PlainText": "Текст задания",
+	"Difficulty": "Five",
+	"MaxScore": 15
+}
+```
+
+**Список версий вопроса:**
+> **GET** http://localhost:5000/odata/testQuestionVersions
+
+**Версия вопроса с идентификатором 1:**
+> **GET** http://localhost:5000/odata/testQuestionVersions(1)
+
+**Создание варианта с одним вопросом по теме 1 и двумя вопросами по теме 2:**
+> **POST** http://localhost:5000/odata/testQuestions
+_Content-Type:_ application/json
+_Body:_
+```json
+[
+  {
+    "SubjectId": 1,
+    "Quantity": 1
+  },
+  {
+    "SubjectId": 2,
+    "Quantity": 2
+  }
+]
+```
+
+**Список ответов:**
+> **GET** http://localhost:5000/odata/testAnswers
+
+**Ответ с идентификатором 1:**
+> **GET** http://localhost:5000/odata/testAnswers(1)
+
+**Загрузить новый ответ для вопроса 2 (TestQuestionVersionId = 2):**
+> **POST** http://localhost:5000/odata/testAnswers(2)
+_Content-Type:_ application/json
+_Body:_
+```json
+{
+	"Answer": "Ответ на задание",
+	"IsRight": 1,
+}
+```
+
+**Список ответов студента:**
+> **GET** http://localhost:5000/odata/testStudentAnswers
+
+**Ответ студента с идентификатором 1:**
+> **GET** http://localhost:5000/odata/testStudentAnswers(1)
+
+**Список всех результатов:**
+> **GET** http://localhost:5000/odata/testResults
+
+**Результат с идентификатором 1:**
+> **GET** http://localhost:5000/odata/testResults(1)
+
+**Загрузить новый результат:**
+> **POST** http://localhost:5000/odata/testAnswers(2)
+_Content-Type:_ application/json
+_Body:_
+```json
+[
+  {
+    "TestQuestionVersionId": 1,
+    "Answer": "Ответ на первое задание",
+    "AnswerId": 1,
+    "IsRight": 1,
+    "StudentId": 2
+  },
+  {
+    "TestQuestionVersionId": 2,
+    "Answer": "Ответ на второе задание",
+    "AnswerId": 3,
+    "IsRight": 0,
+    "StudentId": 2
+  }
+]
+```
+

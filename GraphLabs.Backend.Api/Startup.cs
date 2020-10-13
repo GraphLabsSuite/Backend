@@ -49,12 +49,21 @@ namespace GraphLabs.Backend.Api
             var migrationsAssembly = GetType().Assembly.FullName;
 
             var postgresHost = Environment.GetEnvironmentVariable("DB_HOST");
+            var postgresPort = Environment.GetEnvironmentVariable("DB_PORT");
+            postgresPort = string.IsNullOrWhiteSpace(postgresPort)
+                ? "5432"
+                : postgresPort;
             var postgresDb = Environment.GetEnvironmentVariable("DB_NAME");
             var postgresUser = Environment.GetEnvironmentVariable("DB_USER");
             var postgresPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseNpgsql($"Host={postgresHost};Database={postgresDb};Username={postgresUser};Password={postgresPassword}", b => b.MigrationsAssembly(migrationsAssembly)));
+                o =>
+                {
+                    o.UseNpgsql(
+                        $"Host={postgresHost};Port={postgresPort};Database={postgresDb};Username={postgresUser};Password={postgresPassword}",
+                        b => b.MigrationsAssembly(migrationsAssembly));
+                });
 
             if (_environment.IsDevelopment())
             {
@@ -162,10 +171,49 @@ namespace GraphLabs.Backend.Api
                 Namespace = "GraphLabs"
             };
 
+            // Subjects ================================================================================================
+            var subject = builder.EntitySet<Subject>("Subjects").EntityType;
+            subject.HasKey(m => m.Id);
+            subject.HasMany(m => m.TaskModules);
+            subject.HasMany(m => m.TestQuestions);
+
+            // TestQuestions ===========================================================================================
+            var testQuestion = builder.EntitySet<TestQuestion>("TestQuestions").EntityType;
+            testQuestion.HasKey(q => q.Id);
+            testQuestion.HasMany(q => q.TestQuestionVersions);
+            testQuestion.HasRequired(q => q.Subject);
+
+            // TestQuestionVersions ====================================================================================
+            var testQuestionVersion = builder.EntitySet<TestQuestionVersion>("TestQuestionVersions").EntityType;
+            testQuestionVersion.HasKey(v => v.Id);
+            testQuestionVersion.HasMany(v => v.TestStudentAnswers);
+            testQuestionVersion.HasMany(v => v.TestAnswers);
+            testQuestionVersion.HasRequired(v => v.TestQuestion);
+
+            //testQuestionVersion.Function(nameof(TestQuestionVersionsController.CreateVariant)).Returns<IActionResult>();
+
+            // TesAnswers ==============================================================================================
+            var testAnswer = builder.EntitySet<TestAnswer>("TestAnswers").EntityType;
+            testAnswer.HasKey(a => a.Id);
+            testAnswer.HasRequired(a => a.TestQuestionVersion);
+
+            // TestStudentAnswers ======================================================================================
+            var testStudentAnswer = builder.EntitySet<TestStudentAnswer>("TestStudentAnswers").EntityType;
+            testStudentAnswer.HasKey(a => a.Id);
+            testStudentAnswer.HasRequired(a => a.TestQuestionVersion);
+            testStudentAnswer.HasRequired(a => a.TestResult);
+
+            // TestResults =============================================================================================
+            var testResult = builder.EntitySet<TestResult>("TestResults").EntityType;
+            testResult.HasKey(r => r.Id);
+            testResult.HasMany(r => r.TestStudentAnswer);
+            testResult.HasRequired(r => r.Student);
+
             // TaskModules =============================================================================================
             var taskModule = builder.EntitySet<TaskModule>("TaskModules").EntityType;
             taskModule.HasKey(m => m.Id);
             taskModule.HasMany(m => m.Variants);
+            taskModule.HasRequired(m => m.Subject);
             
             taskModule.Function(nameof(TaskModulesController.RandomVariant)).Returns<IActionResult>();
             

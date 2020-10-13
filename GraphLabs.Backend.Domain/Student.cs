@@ -7,5 +7,7 @@ namespace GraphLabs.Backend.Domain
         public virtual string Group { get; set; }
         
         public virtual ICollection<TaskVariantLog> Logs { get; set; }
+
+        public virtual ICollection<TestResult> TestResults { get; set; }
     }
 }

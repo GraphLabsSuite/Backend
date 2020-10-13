@@ -59,6 +59,12 @@ namespace GraphLabs.Backend.DAL
         public DbSet<Student> Students { get; protected set; }
         public DbSet<Teacher> Teachers { get; protected set; }
         public DbSet<TaskVariantLog> TaskVariantLogs { get; protected set; }
+        public DbSet<Subject> Subjects { get; protected set; }
+        public DbSet<TestResult> TestResults { get; protected set; }
+        public DbSet<TestStudentAnswer> TestStudentAnswers { get; protected set; }
+        public DbSet<TestQuestion> TestQuestions { get; protected set; }
+        public DbSet<TestQuestionVersion> TestQuestionVersions { get; protected set; }
+        public DbSet<TestAnswer> TestAnswers { get; protected set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -71,9 +77,17 @@ namespace GraphLabs.Backend.DAL
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
+            var subject = modelBuilder.Entity<Subject>();
+            subject.HasKey(s => s.Id);
+
             var taskModule = modelBuilder.Entity<TaskModule>();
             taskModule.HasKey(t => t.Id);
-
+            taskModule
+                .HasOne(t => t.Subject)
+                .WithMany(s => s.TaskModules)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            
             var user = modelBuilder.Entity<User>();
             user.HasKey(u => u.Id);
             user.Property(u => u.Email).IsRequired();
@@ -103,6 +117,60 @@ namespace GraphLabs.Backend.DAL
                 .HasForeignKey(l => l.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
             log.HasIndex(l => l.DateTime);
+
+            var testQuestion = modelBuilder.Entity<TestQuestion>();
+            testQuestion
+                .HasKey(q => q.Id);
+            testQuestion
+                .HasOne(s => s.Subject)
+                .WithMany(q => q.TestQuestions)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            var testQuestionVersion = modelBuilder.Entity<TestQuestionVersion>();
+            testQuestionVersion
+                .HasKey(v => v.Id);
+            testQuestionVersion
+                .HasOne(v => v.TestQuestion)
+                .WithMany(q => q.TestQuestionVersions)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            var testAnswer = modelBuilder.Entity<TestAnswer>();
+            testAnswer
+                .HasKey(a => a.Id);
+            testAnswer
+                .HasOne(a => a.TestQuestionVersion)
+                .WithMany(v => v.TestAnswers)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            var testStudentAnswer = modelBuilder.Entity<TestStudentAnswer>();
+            testStudentAnswer
+                .HasKey(a => a.Id);
+            testStudentAnswer
+                .HasOne(a => a.TestQuestionVersion)
+                .WithMany(v => v.TestStudentAnswers)
+                .IsRequired()
+                .HasForeignKey(a => a.AnswerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            testStudentAnswer
+                .HasOne(a => a.TestResult)
+                .WithMany(r => r.TestStudentAnswer)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            var testResult = modelBuilder.Entity<TestResult>();
+            testResult.HasKey(r => r.Id);
+            testResult.Property(r => r.Score).IsRequired();
+            testResult.Property(r => r.MarkEU).IsRequired();
+            testResult.Property(r => r.MarkRU).IsRequired();
+            testResult.HasIndex(r => r.DateTime);
+            testResult
+                .HasOne(r => r.Student)
+                .WithMany(s => s.TestResults)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public override void Dispose()
