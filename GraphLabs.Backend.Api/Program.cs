@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,10 +58,18 @@ namespace GraphLabs.Backend.Api
         private static async Task InitializeDb(GraphLabsContext context, InitialData initialData)
         {
             await context.Database.MigrateAsync();
-                
+            
+            if (!context.Subjects.Any())
+            {
+                foreach (var subject in initialData.GetSubjects())
+                {
+                    context.Subjects.Add(subject);
+                }
+                await context.SaveChangesAsync();
+            }
             if (!context.TaskModules.Any())
             {
-                foreach (var module in initialData.GetTaskModules())
+                foreach (var module in initialData.GetTaskModules(context.Subjects))
                 {
                     context.TaskModules.Add(module);
                 }
