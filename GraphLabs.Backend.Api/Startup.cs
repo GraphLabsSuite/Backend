@@ -47,25 +47,28 @@ namespace GraphLabs.Backend.Api
         public void ConfigureServices(IServiceCollection services)
         {
             var migrationsAssembly = GetType().Assembly.FullName;
-
-            var postgresHost = Environment.GetEnvironmentVariable("DB_HOST");
-            var postgresDb = Environment.GetEnvironmentVariable("DB_NAME");
-            var postgresUser = Environment.GetEnvironmentVariable("DB_USER");
-            var postgresPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+            // var postgresHost = Environment.GetEnvironmentVariable("DB_HOST");
+            // var postgresDb = Environment.GetEnvironmentVariable("DB_NAME");
+            // var postgresUser = Environment.GetEnvironmentVariable("DB_USER");
+            // var postgresPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
+            // var postgresPort = Environment.GetEnvironmentVariable("DB_PORT");
+            // var postgresHost = "postgres.example.com";
+            // var postgresDb = "graphlabs";
+            // var postgresUser = "graphlabs";
+            // var postgresPassword = "my_password";
+            
+            var postgresHost = "db";
+            var postgresDb = "base6";
+            var postgresUser = "postgres";
+            var postgresPassword = "5432";
+            var postgresPort = "5432";
+            
 
             services.AddDbContext<GraphLabsContext>(
-                o => o.UseNpgsql($"Host={postgresHost};Database={postgresDb};Username={postgresUser};Password={postgresPassword}", b => b.MigrationsAssembly(migrationsAssembly)));
+                o => o.UseNpgsql($"Host={postgresHost};Database={postgresDb};Username={postgresUser};Password={postgresPassword};Port={postgresPort}", b => b.MigrationsAssembly(migrationsAssembly)));
+            services.AddSingleton<InitialData>();
+            services.AddCors();
 
-            if (_environment.IsDevelopment())
-            {
-                services.AddSingleton<InitialData>();
-                services.AddCors();
-            }
-            else
-            {
-                throw new NotImplementedException("Для продакшна сделаем чуть позже");
-            }
-            
             services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             

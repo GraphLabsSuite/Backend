@@ -1,0 +1,54 @@
+version: '3.5'
+
+networks:
+  net:
+
+
+services:
+  db:
+    container_name: db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=base6
+      - POSTGRES_PASSWORD=5432
+    image: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d base6 -U postgres -h localhost -p 5432"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+    networks:
+      - net
+
+  back:
+    container_name: back
+    build: 
+      dockerfile: C:\Users\Kirill\RiderProjects\Backend\Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=base6
+      - DB_USER=postgres
+      - DB_PASSWORD=5432
+      - DB_PORT=5433
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - net
+    
+  front:
+    container_name: front
+    build:
+      dockerfile: C:\Users\Kirill\RiderProjects\Web.Client\Dockerfile
+    ports:
+      - "5050:5050"
+    depends_on:
+      back:
+        condition: service_started
+    networks:
+      - net

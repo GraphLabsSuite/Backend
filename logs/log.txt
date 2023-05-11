@@ -1,0 +1,20 @@
+2023-03-06 23:25:57.342 +03:00 [INF] Starting web host
+2023-03-06 23:25:57.532 +03:00 [FTL] Host terminated unexpectedly
+System.NotImplementedException: Для продакшна сделаем чуть позже
+   at GraphLabs.Backend.Api.Startup.ConfigureServices(IServiceCollection services) in C:\Users\Kirill\RiderProjects\Backend\GraphLabs.Backend.Api\Startup.cs:line 79
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Hosting.ConventionBasedStartup.ConfigureServices(IServiceCollection services)
+   at Microsoft.AspNetCore.Hosting.Internal.WebHost.EnsureApplicationServices()
+   at Microsoft.AspNetCore.Hosting.Internal.WebHost.Initialize()
+   at Microsoft.AspNetCore.Hosting.WebHostBuilder.Build()
+   at GraphLabs.Backend.Api.Program.Main(String[] args) in C:\Users\Kirill\RiderProjects\Backend\GraphLabs.Backend.Api\Program.cs:line 30
+2023-03-06 23:26:56.769 +03:00 [INF] Starting web host
+2023-03-06 23:26:57.053 +03:00 [FTL] Host terminated unexpectedly
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at GraphLabs.Backend.Api.Startup.ConfigureServices(IServiceCollection services) in C:\Users\Kirill\RiderProjects\Backend\GraphLabs.Backend.Api\Startup.cs:line 88
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Hosting.ConventionBasedStartup.ConfigureServices(IServiceCollection services)
+   at Microsoft.AspNetCore.Hosting.Internal.WebHost.EnsureApplicationServices()
+   at Microsoft.AspNetCore.Hosting.Internal.WebHost.Initialize()
+   at Microsoft.AspNetCore.Hosting.WebHostBuilder.Build()
+   at GraphLabs.Backend.Api.Program.Main(String[] args) in C:\Users\Kirill\RiderProjects\Backend\GraphLabs.Backend.Api\Program.cs:line 30
